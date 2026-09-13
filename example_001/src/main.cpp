@@ -40,8 +40,8 @@ auto main() -> int {
   float const main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
 
   char const *title{"example_001"};
-  int const window_w{static_cast<int>(1280 * main_scale)};
-  int const window_h{static_cast<int>(720 * main_scale)};
+  std::int32_t const window_w{static_cast<std::int32_t>(1280 * main_scale)};
+  std::int32_t const window_h{static_cast<std::int32_t>(720 * main_scale)};
   SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
   SDL_Window *window{SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
@@ -102,8 +102,8 @@ auto main() -> int {
       continue;
     }
 
-    int framebuffer_w{};
-    int framebuffer_h{};
+    std::int32_t framebuffer_w{};
+    std::int32_t framebuffer_h{};
     SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
