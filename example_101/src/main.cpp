@@ -23,19 +23,21 @@ auto main() -> int {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
-  SDL_WindowFlags window_flags =
-      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-  SDL_Window *window = SDL_CreateWindow("example_101",
-                                        static_cast<int>(1280 * main_scale),
-                                        static_cast<int>(720 * main_scale),
-                                        window_flags);
+
+  float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
+
+  const char *title{"example_101"};
+  int window_w{static_cast<int>(1280 * main_scale)};
+  int window_h{static_cast<int>(720 * main_scale)};
+  SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
+  SDL_Window *window{SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
     spdlog::error("SDL window creation failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   spdlog::info("SDL window created successfully");
-  SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+
+  SDL_GLContext gl_context{SDL_GL_CreateContext(window)};
   if (gl_context == nullptr) {
     spdlog::error("SDL GL context creation failed: {}", SDL_GetError());
     return EXIT_FAILURE;
@@ -64,7 +66,7 @@ auto main() -> int {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   // NOLINTNEXTLINE(readability-identifier-length)
-  ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io{ImGui::GetIO()};
   static_cast<void>(io);
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -76,7 +78,7 @@ auto main() -> int {
   ImGui::StyleColorsDark();
   // ImGui::StyleColorsLight();
 
-  ImGuiStyle &style = ImGui::GetStyle();
+  ImGuiStyle &style{ImGui::GetStyle()};
   style.ScaleAllSizes(main_scale);
   style.FontScaleDpi = main_scale;
   io.ConfigDpiScaleFonts = true;
@@ -90,7 +92,7 @@ auto main() -> int {
   ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  bool done = false;
+  bool done{false};
 
   while (!done) {
     SDL_Event event;
@@ -120,8 +122,8 @@ auto main() -> int {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if (static_cast<bool>(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
-      SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
-      SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+      SDL_Window *backup_current_window{SDL_GL_GetCurrentWindow()};
+      SDL_GLContext backup_current_context{SDL_GL_GetCurrentContext()};
       ImGui::UpdatePlatformWindows();
       ImGui::RenderPlatformWindowsDefault();
       SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
