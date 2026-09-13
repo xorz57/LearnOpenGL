@@ -35,13 +35,6 @@ public:
   void setInt(char const *name, std::int32_t value) const;
   void setFloat(char const *name, float value) const;
 
-  // NOLINTNEXTLINE(readability-identifier-length)
-  void setFloat2(char const *name, float x, float y) const;
-  // NOLINTNEXTLINE(readability-identifier-length)
-  void setFloat3(char const *name, float x, float y, float z) const;
-  // NOLINTNEXTLINE(readability-identifier-length)
-  void setFloat4(char const *name, float x, float y, float z, float w) const;
-
   void setVec2(char const *name, glm::vec2 const &value) const;
   void setVec3(char const *name, glm::vec3 const &value) const;
   void setVec4(char const *name, glm::vec4 const &value) const;

@@ -94,30 +94,6 @@ void Shader::setFloat(char const *name, float value) const {
   }
 }
 
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setFloat2(char const *name, float x, float y) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform2f(id_, loc, x, y);
-  }
-}
-
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setFloat3(char const *name, float x, float y, float z) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform3f(id_, loc, x, y, z);
-  }
-}
-
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setFloat4(char const *name, float x, float y, float z, float w) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform4f(id_, loc, x, y, z, w);
-  }
-}
-
 void Shader::setVec2(char const *name, glm::vec2 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
