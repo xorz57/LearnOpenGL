@@ -133,10 +133,12 @@ auto main() -> int {
   VertexArray vertex_array;
   Buffer vertex_buffer{std::span(vertices)};
   Buffer index_buffer{std::span(indices)};
-  vertex_array.setLayout<Vertex>(vertex_buffer,
-                                 {{.size = 3, .offset = offsetof(Vertex, position)},
-                                  {.size = 3, .offset = offsetof(Vertex, normal)},
-                                  {.size = 2, .offset = offsetof(Vertex, uv)}});
+  BufferLayout const layout{
+      {ShaderDataType::Float3},
+      {ShaderDataType::Float3},
+      {ShaderDataType::Float2},
+  };
+  vertex_array.setVertexBuffer(vertex_buffer, layout);
   vertex_array.setElementBuffer(index_buffer);
 
   char const *vertex_shader_source{R"(

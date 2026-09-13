@@ -22,33 +22,42 @@ auto VertexArray::operator=(VertexArray &&other) noexcept -> VertexArray & {
   return *this;
 }
 
-void VertexArray::setLayoutImpl(Buffer const &vertex_buffer,
-                                std::int32_t stride,
-                                std::initializer_list<VertexAttribute> attributes,
-                                std::uint32_t binding_index,
-                                std::intptr_t buffer_offset) const noexcept {
-  glVertexArrayVertexBuffer(id_, binding_index, vertex_buffer.getId(), buffer_offset, stride);
+void VertexArray::setVertexBuffer(Buffer const &vertex_buffer,
+                                  BufferLayout const &layout,
+                                  std::uint32_t binding_index,
+                                  std::intptr_t buffer_offset) const noexcept {
+  glVertexArrayVertexBuffer(id_, binding_index, vertex_buffer.getId(), buffer_offset, layout.getStride());
 
-  for (auto const &attribute : attributes) {
+  for (auto const &element : layout) {
     std::uint32_t const attribute_index{next_attribute_index_++};
     glEnableVertexArrayAttrib(id_, attribute_index);
-    auto const relative_offset{static_cast<std::uint32_t>(attribute.offset)};
-    auto const normalized{attribute.normalized ? GL_TRUE : GL_FALSE};
-    switch (attribute.type) {
-    case AttributeType::F32:
-      glVertexArrayAttribFormat(id_, attribute_index, attribute.size, GL_FLOAT, GL_FALSE, relative_offset);
+    auto const relative_offset{static_cast<std::uint32_t>(element.offset)};
+    auto const component_count{getShaderDataTypeComponentCount(element.type)};
+    auto const normalized{element.normalized ? GL_TRUE : GL_FALSE};
+    switch (element.type) {
+    case ShaderDataType::Float:
+    case ShaderDataType::Float2:
+    case ShaderDataType::Float3:
+    case ShaderDataType::Float4:
+      glVertexArrayAttribFormat(id_, attribute_index, component_count, GL_FLOAT, GL_FALSE, relative_offset);
       break;
-    case AttributeType::I8:
-      glVertexArrayAttribFormat(id_, attribute_index, attribute.size, GL_BYTE, normalized, relative_offset);
+    case ShaderDataType::Int:
+    case ShaderDataType::Int2:
+    case ShaderDataType::Int3:
+    case ShaderDataType::Int4:
+      glVertexArrayAttribIFormat(id_, attribute_index, component_count, GL_INT, relative_offset);
       break;
-    case AttributeType::U8:
-      glVertexArrayAttribFormat(id_, attribute_index, attribute.size, GL_UNSIGNED_BYTE, normalized, relative_offset);
+    case ShaderDataType::UInt:
+    case ShaderDataType::UInt2:
+    case ShaderDataType::UInt3:
+    case ShaderDataType::UInt4:
+      glVertexArrayAttribIFormat(id_, attribute_index, component_count, GL_UNSIGNED_INT, relative_offset);
       break;
-    case AttributeType::I32:
-      glVertexArrayAttribIFormat(id_, attribute_index, attribute.size, GL_INT, relative_offset);
+    case ShaderDataType::Byte4:
+      glVertexArrayAttribFormat(id_, attribute_index, component_count, GL_BYTE, normalized, relative_offset);
       break;
-    case AttributeType::U32:
-      glVertexArrayAttribIFormat(id_, attribute_index, attribute.size, GL_UNSIGNED_INT, relative_offset);
+    case ShaderDataType::UByte4:
+      glVertexArrayAttribFormat(id_, attribute_index, component_count, GL_UNSIGNED_BYTE, normalized, relative_offset);
       break;
     }
     glVertexArrayAttribBinding(id_, attribute_index, binding_index);
