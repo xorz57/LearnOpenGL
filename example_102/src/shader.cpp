@@ -3,7 +3,6 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-#include <array>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 #include <sstream>
@@ -67,6 +66,7 @@ auto Shader::loadFromFile(std::filesystem::path const &vertex_shader_path,
 void Shader::use() const {
   if (id_ == 0) {
     spdlog::error("Shader program not initialized");
+    glUseProgram(0);
     return;
   }
 
@@ -213,16 +213,18 @@ auto Shader::compile(char const *vertex_shader_source, char const *fragment_shad
 
 auto Shader::checkCompileErrors(std::uint32_t shader, ShaderType type) -> bool {
   std::int32_t success{};
-  std::array<char, 1024> info_log{};
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (success == 0) {
-    glGetShaderInfoLog(shader, info_log.size(), nullptr, info_log.data());
+    std::int32_t log_length{};
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+    std::string info_log(static_cast<std::size_t>(log_length), '\0');
+    glGetShaderInfoLog(shader, log_length, nullptr, info_log.data());
     switch (type) {
     case ShaderType::Vertex:
-      spdlog::error("Shader compilation error [VERTEX]: {}", info_log.data());
+      spdlog::error("Shader compilation error [VERTEX]: {}", info_log);
       break;
     case ShaderType::Fragment:
-      spdlog::error("Shader compilation error [FRAGMENT]: {}", info_log.data());
+      spdlog::error("Shader compilation error [FRAGMENT]: {}", info_log);
       break;
     }
     return false;
@@ -232,12 +234,13 @@ auto Shader::checkCompileErrors(std::uint32_t shader, ShaderType type) -> bool {
 
 auto Shader::checkLinkErrors(std::uint32_t program) -> bool {
   std::int32_t success{};
-  std::array<char, 1024> info_log{};
-
   glGetProgramiv(program, GL_LINK_STATUS, &success);
   if (success == 0) {
-    glGetProgramInfoLog(program, info_log.size(), nullptr, info_log.data());
-    spdlog::error("Program linking error [PROGRAM]: {}", info_log.data());
+    std::int32_t log_length{};
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+    std::string info_log(static_cast<std::size_t>(log_length), '\0');
+    glGetProgramInfoLog(program, log_length, nullptr, info_log.data());
+    spdlog::error("Program linking error [PROGRAM]: {}", info_log);
     return false;
   }
   return true;
