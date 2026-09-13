@@ -1,10 +1,9 @@
-#include "buffer.h"
 #include "shader.h"
 #include "vertex.h"
-#include "vertex_array.h"
 
 #include <SDL3/SDL.h>
 #include <cmath>
+#include <cstddef>
 #include <glad/gl.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_sdl3.h>
@@ -130,16 +129,41 @@ auto main() -> int {
 
   std::vector<uint32_t> indices{0, 1, 2, 2, 3, 0};
 
-  VertexArray vertex_array;
-  Buffer vertex_buffer{std::span(vertices)};
-  Buffer index_buffer{std::span(indices)};
-  BufferLayout const layout{
-      {ShaderDataType::Float3},
-      {ShaderDataType::Float3},
-      {ShaderDataType::Float2},
-  };
-  vertex_array.setVertexBuffer(vertex_buffer, layout);
-  vertex_array.setElementBuffer(index_buffer);
+  std::uint32_t vertex_buffer_id{};
+  glCreateBuffers(1, &vertex_buffer_id);
+  glNamedBufferStorage(vertex_buffer_id,
+                       static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)),
+                       vertices.data(),
+                       0);
+  auto vertex_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vertex_buffer_id); }}};
+
+  std::uint32_t index_buffer_id{};
+  glCreateBuffers(1, &index_buffer_id);
+  glNamedBufferStorage(index_buffer_id,
+                       static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)),
+                       indices.data(),
+                       0);
+  auto index_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &index_buffer_id); }}};
+
+  std::uint32_t vertex_array_id{};
+  glCreateVertexArrays(1, &vertex_array_id);
+  auto vertex_array_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vertex_array_id); }}};
+
+  glVertexArrayVertexBuffer(vertex_array_id, 0, vertex_buffer_id, 0, sizeof(Vertex));
+
+  glEnableVertexArrayAttrib(vertex_array_id, 0);
+  glVertexArrayAttribFormat(vertex_array_id, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+  glVertexArrayAttribBinding(vertex_array_id, 0, 0);
+
+  glEnableVertexArrayAttrib(vertex_array_id, 1);
+  glVertexArrayAttribFormat(vertex_array_id, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+  glVertexArrayAttribBinding(vertex_array_id, 1, 0);
+
+  glEnableVertexArrayAttrib(vertex_array_id, 2);
+  glVertexArrayAttribFormat(vertex_array_id, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+  glVertexArrayAttribBinding(vertex_array_id, 2, 0);
+
+  glVertexArrayElementBuffer(vertex_array_id, index_buffer_id);
 
   char const *vertex_shader_source{R"(
 #version 460 core
@@ -206,7 +230,11 @@ void main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader->use();
-    vertex_array.drawElements(static_cast<std::uint32_t>(indices.size()));
+    glBindVertexArray(vertex_array_id);
+    glDrawElements(GL_TRIANGLES,
+                   static_cast<std::int32_t>(indices.size()),
+                   GL_UNSIGNED_INT,
+                   static_cast<void *>(nullptr));
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

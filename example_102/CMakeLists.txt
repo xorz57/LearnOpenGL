@@ -1,6 +1,5 @@
 add_executable(example_102)
-target_sources(example_102 PRIVATE src/main.cpp src/vertex_array.cpp
-                                   src/buffer.cpp src/shader.cpp)
+target_sources(example_102 PRIVATE src/main.cpp src/shader.cpp)
 target_include_directories(example_102 PRIVATE src)
 find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy)
 if(CLANG_TIDY_PROGRAM)
