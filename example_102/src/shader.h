@@ -57,9 +57,10 @@ private:
 
   [[nodiscard]] auto getUniformLocation(char const *name) const -> std::int32_t;
   [[nodiscard]] auto compile(char const *vertex_shader_source, char const *fragment_shader_source) -> bool;
+  void cacheUniformLocations();
   [[nodiscard]] static auto checkCompileErrors(std::uint32_t shader, ShaderType type) -> bool;
   [[nodiscard]] static auto checkLinkErrors(std::uint32_t program) -> bool;
 
   std::uint32_t id_{};
-  mutable std::unordered_map<std::string, std::int32_t, StringHash, std::equal_to<>> uniform_location_cache_;
+  std::unordered_map<std::string, std::int32_t, StringHash, std::equal_to<>> uniform_location_cache_;
 };

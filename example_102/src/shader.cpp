@@ -147,12 +147,8 @@ auto Shader::getUniformLocation(char const *name) const -> std::int32_t {
     return it->second;
   }
 
-  std::int32_t const location{glGetUniformLocation(id_, name)};
-  uniform_location_cache_.try_emplace(name, location);
-  if (location == -1) {
-    spdlog::warn("Shader uniform not found: {}", name);
-  }
-  return location;
+  spdlog::warn("Shader uniform not found: {}", name);
+  return -1;
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters,-warnings-as-errors)
@@ -177,7 +173,9 @@ auto Shader::compile(char const *vertex_shader_source, char const *fragment_shad
   glAttachShader(id_, vertex_shader);
   glAttachShader(id_, fragment_shader);
   glLinkProgram(id_);
-  if (!checkLinkErrors(id_)) {
+  if (checkLinkErrors(id_)) {
+    cacheUniformLocations();
+  } else {
     glDeleteProgram(id_);
     id_ = 0;
   }
@@ -185,6 +183,30 @@ auto Shader::compile(char const *vertex_shader_source, char const *fragment_shad
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
   return id_ != 0;
+}
+
+void Shader::cacheUniformLocations() {
+  std::int32_t uniform_count{};
+  glGetProgramiv(id_, GL_ACTIVE_UNIFORMS, &uniform_count);
+
+  std::int32_t max_name_length{};
+  glGetProgramiv(id_, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
+
+  std::string name_buffer(static_cast<std::size_t>(max_name_length), '\0');
+  for (std::int32_t index{}; index < uniform_count; ++index) {
+    std::int32_t name_length{};
+    std::int32_t size{};
+    std::uint32_t type{};
+    glGetActiveUniform(id_,
+                       static_cast<std::uint32_t>(index),
+                       max_name_length,
+                       &name_length,
+                       &size,
+                       &type,
+                       name_buffer.data());
+    std::string const name(name_buffer.data(), static_cast<std::size_t>(name_length));
+    uniform_location_cache_.try_emplace(name, glGetUniformLocation(id_, name.c_str()));
+  }
 }
 
 auto Shader::checkCompileErrors(std::uint32_t shader, ShaderType type) -> bool {
