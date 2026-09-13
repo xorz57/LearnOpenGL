@@ -129,41 +129,35 @@ auto main() -> int {
 
   std::vector<uint32_t> indices{0, 1, 2, 2, 3, 0};
 
-  std::uint32_t vertex_buffer_id{};
-  glCreateBuffers(1, &vertex_buffer_id);
-  glNamedBufferStorage(vertex_buffer_id,
-                       static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)),
-                       vertices.data(),
-                       0);
-  auto vertex_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vertex_buffer_id); }}};
+  std::uint32_t vbo{};
+  glCreateBuffers(1, &vbo);
+  glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
+  auto vbo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vbo); }}};
 
-  std::uint32_t index_buffer_id{};
-  glCreateBuffers(1, &index_buffer_id);
-  glNamedBufferStorage(index_buffer_id,
-                       static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)),
-                       indices.data(),
-                       0);
-  auto index_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &index_buffer_id); }}};
+  std::uint32_t ebo{};
+  glCreateBuffers(1, &ebo);
+  glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
+  auto ebo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ebo); }}};
 
-  std::uint32_t vertex_array_id{};
-  glCreateVertexArrays(1, &vertex_array_id);
-  auto vertex_array_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vertex_array_id); }}};
+  std::uint32_t vao{};
+  glCreateVertexArrays(1, &vao);
+  auto vao_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vao); }}};
 
-  glVertexArrayVertexBuffer(vertex_array_id, 0, vertex_buffer_id, 0, sizeof(Vertex));
+  glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(Vertex));
 
-  glEnableVertexArrayAttrib(vertex_array_id, 0);
-  glVertexArrayAttribFormat(vertex_array_id, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-  glVertexArrayAttribBinding(vertex_array_id, 0, 0);
+  glEnableVertexArrayAttrib(vao, 0);
+  glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+  glVertexArrayAttribBinding(vao, 0, 0);
 
-  glEnableVertexArrayAttrib(vertex_array_id, 1);
-  glVertexArrayAttribFormat(vertex_array_id, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
-  glVertexArrayAttribBinding(vertex_array_id, 1, 0);
+  glEnableVertexArrayAttrib(vao, 1);
+  glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+  glVertexArrayAttribBinding(vao, 1, 0);
 
-  glEnableVertexArrayAttrib(vertex_array_id, 2);
-  glVertexArrayAttribFormat(vertex_array_id, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
-  glVertexArrayAttribBinding(vertex_array_id, 2, 0);
+  glEnableVertexArrayAttrib(vao, 2);
+  glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+  glVertexArrayAttribBinding(vao, 2, 0);
 
-  glVertexArrayElementBuffer(vertex_array_id, index_buffer_id);
+  glVertexArrayElementBuffer(vao, ebo);
 
   std::optional<Shader> shader{
       Shader::loadFromFile(ASSETS_DIR "shaders/default.vert.glsl", ASSETS_DIR "shaders/default.frag.glsl")};
@@ -211,7 +205,7 @@ auto main() -> int {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader->use();
-    glBindVertexArray(vertex_array_id);
+    glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES,
                    static_cast<std::int32_t>(indices.size()),
                    GL_UNSIGNED_INT,
