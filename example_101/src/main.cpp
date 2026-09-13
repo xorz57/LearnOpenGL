@@ -99,11 +99,17 @@ auto main() -> int {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL3_ProcessEvent(&event);
-      if (event.type == SDL_EVENT_QUIT) {
+      switch (event.type) {
+      case SDL_EVENT_QUIT:
         done = true;
-      }
-      if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window)) {
-        done = true;
+        break;
+      case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        if (event.window.windowID == SDL_GetWindowID(window)) {
+          done = true;
+        }
+        break;
+      default:
+        break;
       }
     }
 
