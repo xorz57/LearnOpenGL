@@ -84,6 +84,7 @@ auto main() -> int {
   spdlog::info("GLAD initialized successfully");
 
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
 
   // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
