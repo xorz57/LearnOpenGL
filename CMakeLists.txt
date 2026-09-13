@@ -47,4 +47,5 @@ add_library(stb::image ALIAS stb_image)
 target_sources(stb_image INTERFACE vendor/stb/stb_image.h)
 target_include_directories(stb_image INTERFACE vendor)
 
+add_subdirectory(example_001)
 add_subdirectory(example_101)

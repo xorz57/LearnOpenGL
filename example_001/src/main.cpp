@@ -1,0 +1,94 @@
+#include <SDL3/SDL.h>
+#include <glad/gl.h>
+#include <spdlog/spdlog.h>
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+auto main() -> int {
+  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
+    spdlog::error("SDL initialization failed: {}", SDL_GetError());
+    return EXIT_FAILURE;
+  }
+  spdlog::info("SDL initialized successfully");
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+  float const main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
+
+  char const *title{"example_001"};
+  int const window_w{static_cast<int>(1280 * main_scale)};
+  int const window_h{static_cast<int>(720 * main_scale)};
+  SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
+  SDL_Window *window{SDL_CreateWindow(title, window_w, window_h, flags)};
+  if (window == nullptr) {
+    spdlog::error("SDL window creation failed: {}", SDL_GetError());
+    return EXIT_FAILURE;
+  }
+  spdlog::info("SDL window created successfully");
+
+  SDL_GLContext gl_context{SDL_GL_CreateContext(window)};
+  if (gl_context == nullptr) {
+    spdlog::error("SDL GL context creation failed: {}", SDL_GetError());
+    return EXIT_FAILURE;
+  }
+  spdlog::info("SDL GL context created successfully");
+
+  SDL_GL_MakeCurrent(window, gl_context);
+  SDL_GL_SetSwapInterval(1);
+  SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  SDL_ShowWindow(window);
+
+  // NOLINTNEXTLINE
+  if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
+    spdlog::error("GLAD initialization failed");
+    return EXIT_FAILURE;
+  }
+  spdlog::info("GLAD initialized successfully");
+
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+  spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+  spdlog::info("GLSL version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+  spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+
+  bool done{false};
+
+  while (!done) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_EVENT_QUIT) {
+        done = true;
+      }
+      if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window)) {
+        done = true;
+      }
+    }
+
+    if (static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)) {
+      SDL_Delay(10);
+      continue;
+    }
+
+    int framebuffer_w{};
+    int framebuffer_h{};
+    SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
+    glViewport(0, 0, framebuffer_w, framebuffer_h);
+    glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    SDL_GL_SwapWindow(window);
+  }
+
+  SDL_GL_DestroyContext(gl_context);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
+
+  return EXIT_SUCCESS;
+}
