@@ -165,29 +165,8 @@ auto main() -> int {
 
   glVertexArrayElementBuffer(vertex_array_id, index_buffer_id);
 
-  char const *vertex_shader_source{R"(
-#version 460 core
-
-layout (location = 0) in vec3 a_position;
-
-void main() {
-  gl_Position = vec4(a_position, 1.0F);
-}
-)"};
-
-  char const *fragment_shader_source{R"(
-#version 460 core
-
-uniform vec3 u_color;
-
-out vec4 f_color;
-
-void main() {
-  f_color = vec4(u_color, 1.0F);
-}
-)"};
-
-  std::optional<Shader> shader{Shader::loadFromSource(vertex_shader_source, fragment_shader_source)};
+  std::optional<Shader> shader{
+      Shader::loadFromFile(ASSETS_DIR "shaders/default.vert.glsl", ASSETS_DIR "shaders/default.frag.glsl")};
   if (!shader.has_value()) {
     return EXIT_FAILURE;
   }
@@ -223,8 +202,10 @@ void main() {
     ImGui::NewFrame();
 
     ImGui::Render();
-    std::int32_t const framebuffer_w{static_cast<std::int32_t>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x))};
-    std::int32_t const framebuffer_h{static_cast<std::int32_t>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y))};
+    std::int32_t const framebuffer_w{
+        static_cast<std::int32_t>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x))};
+    std::int32_t const framebuffer_h{
+        static_cast<std::int32_t>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y))};
     glViewport(0, 0, framebuffer_w, framebuffer_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);

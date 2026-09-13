@@ -20,3 +20,5 @@ target_link_libraries(
           spdlog::spdlog
           imgui::imgui
           stb::image)
+target_compile_definitions(
+  example_102 PRIVATE ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
