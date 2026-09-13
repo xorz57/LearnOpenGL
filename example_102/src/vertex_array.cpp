@@ -42,12 +42,7 @@ void VertexArray::setLayoutImpl(Buffer const &vertex_buffer,
       glVertexArrayAttribFormat(id_, attribute_index, attribute.size, GL_BYTE, normalized, relative_offset);
       break;
     case AttributeType::U8:
-      glVertexArrayAttribFormat(id_,
-                                attribute_index,
-                                attribute.size,
-                                GL_UNSIGNED_BYTE,
-                                normalized,
-                                relative_offset);
+      glVertexArrayAttribFormat(id_, attribute_index, attribute.size, GL_UNSIGNED_BYTE, normalized, relative_offset);
       break;
     case AttributeType::I32:
       glVertexArrayAttribIFormat(id_, attribute_index, attribute.size, GL_INT, relative_offset);
