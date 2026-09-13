@@ -80,7 +80,7 @@ void Shader::setBool(char const *name, bool value) const {
   }
 }
 
-void Shader::setInt(char const *name, int value) const {
+void Shader::setInt(char const *name, std::int32_t value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform1i(id_, loc, value);
