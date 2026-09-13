@@ -6,6 +6,23 @@
 #include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
+#include <utility>
+
+template <typename Function> class ScopeExit final {
+public:
+  explicit ScopeExit(Function function) : function_{std::move(function)} {}
+  ~ScopeExit() { function_(); }
+
+  ScopeExit(ScopeExit const &) = delete;
+  auto operator=(ScopeExit const &) -> ScopeExit & = delete;
+
+  ScopeExit(ScopeExit &&) = delete;
+  auto operator=(ScopeExit &&) -> ScopeExit & = delete;
+
+private:
+  Function function_;
+};
+
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 auto main() -> int {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
@@ -13,6 +30,7 @@ auto main() -> int {
     return EXIT_FAILURE;
   }
   spdlog::info("SDL initialized successfully");
+  auto sdl_cleanup{ScopeExit{[]() -> void { SDL_Quit(); }}};
 
   char const *glsl_version{"#version 460 core"};
 
@@ -37,6 +55,7 @@ auto main() -> int {
     return EXIT_FAILURE;
   }
   spdlog::info("SDL window created successfully");
+  auto window_cleanup{ScopeExit{[&]() -> void { SDL_DestroyWindow(window); }}};
 
   SDL_GLContext gl_context{SDL_GL_CreateContext(window)};
   if (gl_context == nullptr) {
@@ -44,6 +63,7 @@ auto main() -> int {
     return EXIT_FAILURE;
   }
   spdlog::info("SDL GL context created successfully");
+  auto gl_context_cleanup{ScopeExit{[&]() -> void { SDL_GL_DestroyContext(gl_context); }}};
 
   SDL_GL_MakeCurrent(window, gl_context);
   SDL_GL_SetSwapInterval(1);
@@ -66,6 +86,11 @@ auto main() -> int {
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
+  auto imgui_cleanup{ScopeExit{[]() -> void {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
+  }}};
   // NOLINTNEXTLINE(readability-identifier-length)
   ImGuiIO &io{ImGui::GetIO()};
   static_cast<void>(io);
@@ -140,14 +165,6 @@ auto main() -> int {
 
     SDL_GL_SwapWindow(window);
   }
-
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplSDL3_Shutdown();
-  ImGui::DestroyContext();
-
-  SDL_GL_DestroyContext(gl_context);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
 
   return EXIT_SUCCESS;
 }
