@@ -148,8 +148,10 @@ auto main() -> int {
     ImGui::NewFrame();
 
     ImGui::Render();
-    std::int32_t const framebuffer_w{static_cast<std::int32_t>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x))};
-    std::int32_t const framebuffer_h{static_cast<std::int32_t>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y))};
+    std::int32_t const framebuffer_w{
+        static_cast<std::int32_t>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x))};
+    std::int32_t const framebuffer_h{
+        static_cast<std::int32_t>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y))};
     glViewport(0, 0, framebuffer_w, framebuffer_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
