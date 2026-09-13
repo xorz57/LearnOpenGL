@@ -27,7 +27,7 @@ auto Shader::operator=(Shader &&other) noexcept -> Shader & {
 auto Shader::loadFromSource(char const *vertex_shader_source, char const *fragment_shader_source)
     -> std::optional<Shader> {
   Shader shader{};
-  if (!shader.compile(vertex_shader_source, fragment_shader_source)) {
+  if (!shader.build(vertex_shader_source, fragment_shader_source)) {
     spdlog::error("Failed to compile or link shader program");
     return std::nullopt;
   }
@@ -136,32 +136,17 @@ void Shader::setMat4(char const *name, glm::mat4 const &mat) const {
   }
 }
 
-auto Shader::getUniformLocation(char const *name) const -> std::int32_t {
-  if (id_ == 0) {
-    spdlog::error("Shader program not initialized");
-    return -1;
-  }
-
-  // NOLINTNEXTLINE(readability-identifier-length)
-  if (auto const it{uniform_location_cache_.find(name)}; it != uniform_location_cache_.end()) {
-    return it->second;
-  }
-
-  spdlog::warn("Shader uniform not found: {}", name);
-  return -1;
-}
-
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters,-warnings-as-errors)
-auto Shader::compile(char const *vertex_shader_source, char const *fragment_shader_source) -> bool {
+auto Shader::build(char const *vertex_shader_source, char const *fragment_shader_source) -> bool {
   std::uint32_t const vertex_shader{glCreateShader(GL_VERTEX_SHADER)};
   glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
   glCompileShader(vertex_shader);
-  bool const vertex_compiled{checkCompileErrors(vertex_shader, ShaderType::Vertex)};
+  bool const vertex_compiled{verifyShaderCompiled(vertex_shader, ShaderType::Vertex)};
 
   std::uint32_t const fragment_shader{glCreateShader(GL_FRAGMENT_SHADER)};
   glShaderSource(fragment_shader, 1, &fragment_shader_source, nullptr);
   glCompileShader(fragment_shader);
-  bool const fragment_compiled{checkCompileErrors(fragment_shader, ShaderType::Fragment)};
+  bool const fragment_compiled{verifyShaderCompiled(fragment_shader, ShaderType::Fragment)};
 
   if (!vertex_compiled || !fragment_compiled) {
     glDeleteShader(vertex_shader);
@@ -173,7 +158,7 @@ auto Shader::compile(char const *vertex_shader_source, char const *fragment_shad
   glAttachShader(id_, vertex_shader);
   glAttachShader(id_, fragment_shader);
   glLinkProgram(id_);
-  if (checkLinkErrors(id_)) {
+  if (verifyProgramLinked(id_)) {
     cacheUniformLocations();
   } else {
     glDeleteProgram(id_);
@@ -183,6 +168,41 @@ auto Shader::compile(char const *vertex_shader_source, char const *fragment_shad
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
   return id_ != 0;
+}
+
+auto Shader::verifyShaderCompiled(std::uint32_t shader, ShaderType type) -> bool {
+  std::int32_t success{};
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  if (success == 0) {
+    std::int32_t log_length{};
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+    std::string info_log(static_cast<std::size_t>(log_length), '\0');
+    glGetShaderInfoLog(shader, log_length, nullptr, info_log.data());
+    switch (type) {
+    case ShaderType::Vertex:
+      spdlog::error("Shader compilation error [VERTEX]: {}", info_log);
+      break;
+    case ShaderType::Fragment:
+      spdlog::error("Shader compilation error [FRAGMENT]: {}", info_log);
+      break;
+    }
+    return false;
+  }
+  return true;
+}
+
+auto Shader::verifyProgramLinked(std::uint32_t program) -> bool {
+  std::int32_t success{};
+  glGetProgramiv(program, GL_LINK_STATUS, &success);
+  if (success == 0) {
+    std::int32_t log_length{};
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+    std::string info_log(static_cast<std::size_t>(log_length), '\0');
+    glGetProgramInfoLog(program, log_length, nullptr, info_log.data());
+    spdlog::error("Program linking error [PROGRAM]: {}", info_log);
+    return false;
+  }
+  return true;
 }
 
 void Shader::cacheUniformLocations() {
@@ -209,37 +229,17 @@ void Shader::cacheUniformLocations() {
   }
 }
 
-auto Shader::checkCompileErrors(std::uint32_t shader, ShaderType type) -> bool {
-  std::int32_t success{};
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-  if (success == 0) {
-    std::int32_t log_length{};
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-    std::string info_log(static_cast<std::size_t>(log_length), '\0');
-    glGetShaderInfoLog(shader, log_length, nullptr, info_log.data());
-    switch (type) {
-    case ShaderType::Vertex:
-      spdlog::error("Shader compilation error [VERTEX]: {}", info_log);
-      break;
-    case ShaderType::Fragment:
-      spdlog::error("Shader compilation error [FRAGMENT]: {}", info_log);
-      break;
-    }
-    return false;
+auto Shader::getUniformLocation(char const *name) const -> std::int32_t {
+  if (id_ == 0) {
+    spdlog::error("Shader program not initialized");
+    return -1;
   }
-  return true;
-}
 
-auto Shader::checkLinkErrors(std::uint32_t program) -> bool {
-  std::int32_t success{};
-  glGetProgramiv(program, GL_LINK_STATUS, &success);
-  if (success == 0) {
-    std::int32_t log_length{};
-    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
-    std::string info_log(static_cast<std::size_t>(log_length), '\0');
-    glGetProgramInfoLog(program, log_length, nullptr, info_log.data());
-    spdlog::error("Program linking error [PROGRAM]: {}", info_log);
-    return false;
+  // NOLINTNEXTLINE(readability-identifier-length)
+  if (auto const it{uniform_location_cache_.find(name)}; it != uniform_location_cache_.end()) {
+    return it->second;
   }
-  return true;
+
+  spdlog::warn("Shader uniform not found: {}", name);
+  return -1;
 }
