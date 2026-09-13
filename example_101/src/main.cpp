@@ -1,4 +1,5 @@
 #include <SDL3/SDL.h>
+#include <cmath>
 #include <glad/gl.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_sdl3.h>
@@ -13,7 +14,7 @@ auto main() -> int {
   }
   spdlog::info("SDL initialized successfully");
 
-  const char *glsl_version{"#version 460 core"};
+  char const *glsl_version{"#version 460 core"};
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -24,11 +25,11 @@ auto main() -> int {
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-  float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
+  float const main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
 
-  const char *title{"example_101"};
-  int window_w{static_cast<int>(1280 * main_scale)};
-  int window_h{static_cast<int>(720 * main_scale)};
+  char const *title{"example_101"};
+  int const window_w{static_cast<int>(1280 * main_scale)};
+  int const window_h{static_cast<int>(720 * main_scale)};
   SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
   SDL_Window *window{SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
@@ -116,7 +117,9 @@ auto main() -> int {
     ImGui::NewFrame();
 
     ImGui::Render();
-    glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
+    int const framebuffer_w = static_cast<int>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x));
+    int const framebuffer_h = static_cast<int>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y));
+    glViewport(0, 0, framebuffer_w, framebuffer_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
