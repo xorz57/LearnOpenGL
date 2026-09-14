@@ -115,24 +115,24 @@ void Shader::setUniform(char const *name, glm::vec4 const &value) const {
   }
 }
 
-void Shader::setUniform(char const *name, glm::mat2 const &mat) const {
+void Shader::setUniform(char const *name, glm::mat2 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
-    glProgramUniformMatrix2fv(id_, loc, 1, GL_FALSE, glm::value_ptr(mat));
+    glProgramUniformMatrix2fv(id_, loc, 1, GL_FALSE, glm::value_ptr(value));
   }
 }
 
-void Shader::setUniform(char const *name, glm::mat3 const &mat) const {
+void Shader::setUniform(char const *name, glm::mat3 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
-    glProgramUniformMatrix3fv(id_, loc, 1, GL_FALSE, glm::value_ptr(mat));
+    glProgramUniformMatrix3fv(id_, loc, 1, GL_FALSE, glm::value_ptr(value));
   }
 }
 
-void Shader::setUniform(char const *name, glm::mat4 const &mat) const {
+void Shader::setUniform(char const *name, glm::mat4 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
-    glProgramUniformMatrix4fv(id_, loc, 1, GL_FALSE, glm::value_ptr(mat));
+    glProgramUniformMatrix4fv(id_, loc, 1, GL_FALSE, glm::value_ptr(value));
   }
 }
 
