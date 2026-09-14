@@ -294,10 +294,10 @@ auto Shader::verifyShaderCompiled(std::uint32_t shader, ShaderType type) -> bool
   std::int32_t success{};
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (success == 0) {
-    std::int32_t log_length{};
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-    std::string info_log(static_cast<std::size_t>(log_length), '\0');
-    glGetShaderInfoLog(shader, log_length, nullptr, info_log.data());
+    std::int32_t info_log_length{};
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
+    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    glGetShaderInfoLog(shader, info_log_length, nullptr, info_log.data());
     switch (type) {
     case ShaderType::Vertex:
       spdlog::error("Shader compilation error [VERTEX]: {}", info_log);
@@ -315,10 +315,10 @@ auto Shader::verifyProgramLinked(std::uint32_t program) -> bool {
   std::int32_t success{};
   glGetProgramiv(program, GL_LINK_STATUS, &success);
   if (success == 0) {
-    std::int32_t log_length{};
-    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
-    std::string info_log(static_cast<std::size_t>(log_length), '\0');
-    glGetProgramInfoLog(program, log_length, nullptr, info_log.data());
+    std::int32_t info_log_length{};
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
+    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    glGetProgramInfoLog(program, info_log_length, nullptr, info_log.data());
     spdlog::error("Program linking error [PROGRAM]: {}", info_log);
     return false;
   }
