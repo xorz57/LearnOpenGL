@@ -80,6 +80,12 @@ void Shader::setUniform(char const *name, bool value) const {
   }
 }
 
+void Shader::setUniform(char const *name, glm::bvec2 const &value) const { setUniform(name, glm::ivec2{value}); }
+
+void Shader::setUniform(char const *name, glm::bvec3 const &value) const { setUniform(name, glm::ivec3{value}); }
+
+void Shader::setUniform(char const *name, glm::bvec4 const &value) const { setUniform(name, glm::ivec4{value}); }
+
 // NOLINTBEGIN(readability-identifier-length)
 
 void Shader::setUniform(char const *name, float v0) const {
