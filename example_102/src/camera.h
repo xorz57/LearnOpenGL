@@ -25,12 +25,9 @@ public:
 
   void processKeyboard(Movement direction, float delta_time, float speed_multiplier = 1.0F);
   void processMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true);
-  void processMousePan(float x_offset, float y_offset) noexcept;
-  void orbit(glm::vec3 const &pivot, float x_offset, float y_offset) noexcept;
 
 private:
   void updateCameraVectors();
-  void applyYawPitchOffset(float x_offset, float y_offset, bool constrain_pitch) noexcept;
 
   glm::vec3 position_;
   glm::vec3 front_{0.0F, 0.0F, -1.0F};
@@ -39,9 +36,8 @@ private:
   glm::vec3 world_up_;
   float yaw_;
   float pitch_;
-  float movement_speed_{2.5F};
+  float movement_speed_{2.0F};
   float mouse_sensitivity_{0.1F};
-  float pan_sensitivity_{0.02F};
   float fov_{45.0F};
   float near_plane_{0.1F};
   float far_plane_{100.0F};

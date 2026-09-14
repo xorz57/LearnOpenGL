@@ -39,21 +39,6 @@ void Camera::processKeyboard(Movement direction, float delta_time, float speed_m
 }
 
 void Camera::processMouseMovement(float x_offset, float y_offset, bool constrain_pitch) {
-  applyYawPitchOffset(x_offset, y_offset, constrain_pitch);
-}
-
-void Camera::processMousePan(float x_offset, float y_offset) noexcept {
-  position_ += (-right_ * x_offset + up_ * y_offset) * pan_sensitivity_;
-}
-
-void Camera::orbit(glm::vec3 const &pivot, float x_offset, float y_offset) noexcept {
-  constexpr float min_orbit_distance{0.01F};
-  auto const distance{glm::max(glm::length(position_ - pivot), min_orbit_distance)};
-  applyYawPitchOffset(x_offset, y_offset, true);
-  position_ = pivot - front_ * distance;
-}
-
-void Camera::applyYawPitchOffset(float x_offset, float y_offset, bool constrain_pitch) noexcept {
   yaw_ += x_offset * mouse_sensitivity_;
   pitch_ += y_offset * mouse_sensitivity_;
   if (constrain_pitch) {

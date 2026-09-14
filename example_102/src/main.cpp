@@ -247,23 +247,24 @@ auto main() -> int {
     if (!io.WantCaptureKeyboard) {
       bool const *keyboard_state{SDL_GetKeyboardState(nullptr)};
       // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      float const speed_multiplier{(keyboard_state[SDL_SCANCODE_LSHIFT]) ? 2.5F : 1.0F};
       if (keyboard_state[SDL_SCANCODE_W]) {
-        camera.processKeyboard(Camera::Movement::Forward, delta_time);
+        camera.processKeyboard(Camera::Movement::Forward, delta_time, speed_multiplier);
       }
       if (keyboard_state[SDL_SCANCODE_S]) {
-        camera.processKeyboard(Camera::Movement::Backward, delta_time);
+        camera.processKeyboard(Camera::Movement::Backward, delta_time, speed_multiplier);
       }
       if (keyboard_state[SDL_SCANCODE_A]) {
-        camera.processKeyboard(Camera::Movement::Left, delta_time);
+        camera.processKeyboard(Camera::Movement::Left, delta_time, speed_multiplier);
       }
       if (keyboard_state[SDL_SCANCODE_D]) {
-        camera.processKeyboard(Camera::Movement::Right, delta_time);
+        camera.processKeyboard(Camera::Movement::Right, delta_time, speed_multiplier);
       }
       if (keyboard_state[SDL_SCANCODE_SPACE]) {
-        camera.processKeyboard(Camera::Movement::Up, delta_time);
+        camera.processKeyboard(Camera::Movement::Up, delta_time, speed_multiplier);
       }
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        camera.processKeyboard(Camera::Movement::Down, delta_time);
+        camera.processKeyboard(Camera::Movement::Down, delta_time, speed_multiplier);
       }
       // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
