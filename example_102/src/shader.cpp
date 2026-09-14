@@ -1,10 +1,10 @@
 #include "shader.h"
 
 #include <glad/gl.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <spdlog/spdlog.h>
 
 #include <fstream>
-#include <glm/gtc/type_ptr.hpp>
 #include <sstream>
 #include <utility>
 

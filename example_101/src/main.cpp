@@ -1,11 +1,11 @@
 #include <SDL3/SDL.h>
-#include <cmath>
 #include <glad/gl.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_sdl3.h>
 #include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
+#include <cmath>
 #include <utility>
 
 template <typename Function> class ScopeExit final {
@@ -48,7 +48,8 @@ auto main() -> int {
   char const *title{"example_101"};
   std::int32_t const window_w{static_cast<std::int32_t>(1280 * main_scale)};
   std::int32_t const window_h{static_cast<std::int32_t>(720 * main_scale)};
-  SDL_WindowFlags const flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
+  SDL_WindowFlags const flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
+                              SDL_WINDOW_HIGH_PIXEL_DENSITY};
   SDL_Window *const window{SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
     spdlog::error("SDL window creation failed: {}", SDL_GetError());
