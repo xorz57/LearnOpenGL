@@ -80,39 +80,8 @@ void Shader::setUniform(char const *name, bool value) const {
   }
 }
 
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setUniform(char const *name, std::int32_t v0) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform1i(id_, loc, v0);
-  }
-}
+// NOLINTBEGIN(readability-identifier-length)
 
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform2i(id_, loc, v0, v1);
-  }
-}
-
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform3i(id_, loc, v0, v1, v2);
-  }
-}
-
-// NOLINTNEXTLINE(readability-identifier-length)
-void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const {
-  std::int32_t const loc{getUniformLocation(name)};
-  if (loc != -1) {
-    glProgramUniform4i(id_, loc, v0, v1, v2, v3);
-  }
-}
-
-// NOLINTNEXTLINE(readability-identifier-length)
 void Shader::setUniform(char const *name, float v0) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
@@ -120,7 +89,6 @@ void Shader::setUniform(char const *name, float v0) const {
   }
 }
 
-// NOLINTNEXTLINE(readability-identifier-length)
 void Shader::setUniform(char const *name, float v0, float v1) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
@@ -128,7 +96,6 @@ void Shader::setUniform(char const *name, float v0, float v1) const {
   }
 }
 
-// NOLINTNEXTLINE(readability-identifier-length)
 void Shader::setUniform(char const *name, float v0, float v1, float v2) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
@@ -136,13 +103,74 @@ void Shader::setUniform(char const *name, float v0, float v1, float v2) const {
   }
 }
 
-// NOLINTNEXTLINE(readability-identifier-length)
 void Shader::setUniform(char const *name, float v0, float v1, float v2, float v3) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform4f(id_, loc, v0, v1, v2, v3);
   }
 }
+
+void Shader::setUniform(char const *name, std::int32_t v0) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform1i(id_, loc, v0);
+  }
+}
+
+void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform2i(id_, loc, v0, v1);
+  }
+}
+
+void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform3i(id_, loc, v0, v1, v2);
+  }
+}
+
+void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform4i(id_, loc, v0, v1, v2, v3);
+  }
+}
+
+void Shader::setUniform(char const *name, std::uint32_t v0) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform1ui(id_, loc, v0);
+  }
+}
+
+void Shader::setUniform(char const *name, std::uint32_t v0, std::uint32_t v1) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform2ui(id_, loc, v0, v1);
+  }
+}
+
+void Shader::setUniform(char const *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform3ui(id_, loc, v0, v1, v2);
+  }
+}
+
+void Shader::setUniform(char const *name,
+                        std::uint32_t v0,
+                        std::uint32_t v1,
+                        std::uint32_t v2,
+                        std::uint32_t v3) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform4ui(id_, loc, v0, v1, v2, v3);
+  }
+}
+
+// NOLINTEND(readability-identifier-length)
 
 void Shader::setUniform(char const *name, glm::vec2 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
