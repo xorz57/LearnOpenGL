@@ -278,9 +278,7 @@ auto Shader::build(char const *vertex_shader_source, char const *fragment_shader
   glAttachShader(id_, vertex_shader);
   glAttachShader(id_, fragment_shader);
   glLinkProgram(id_);
-  if (verifyProgramLinked(id_)) {
-    cacheUniformLocations();
-  } else {
+  if (!verifyProgramLinked(id_)) {
     glDeleteProgram(id_);
     id_ = 0;
   }
@@ -325,30 +323,6 @@ auto Shader::verifyProgramLinked(std::uint32_t program) -> bool {
   return true;
 }
 
-void Shader::cacheUniformLocations() {
-  std::int32_t uniform_count{};
-  glGetProgramiv(id_, GL_ACTIVE_UNIFORMS, &uniform_count);
-
-  std::int32_t max_name_length{};
-  glGetProgramiv(id_, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
-
-  std::string name_buffer(static_cast<std::size_t>(max_name_length), '\0');
-  for (std::int32_t index{}; index < uniform_count; ++index) {
-    std::int32_t name_length{};
-    std::int32_t size{};
-    std::uint32_t type{};
-    glGetActiveUniform(id_,
-                       static_cast<std::uint32_t>(index),
-                       max_name_length,
-                       &name_length,
-                       &size,
-                       &type,
-                       name_buffer.data());
-    std::string const name(name_buffer.data(), static_cast<std::size_t>(name_length));
-    uniform_location_cache_.try_emplace(name, glGetUniformLocation(id_, name.c_str()));
-  }
-}
-
 auto Shader::getUniformLocation(char const *name) const -> std::int32_t {
   if (id_ == 0) {
     spdlog::error("Shader program not initialized");
@@ -360,6 +334,10 @@ auto Shader::getUniformLocation(char const *name) const -> std::int32_t {
     return it->second;
   }
 
-  spdlog::warn("Shader uniform not found: {}", name);
-  return -1;
+  std::int32_t const location{glGetUniformLocation(id_, name)};
+  if (location == -1) {
+    spdlog::warn("Shader uniform not found: {}", name);
+  }
+  uniform_location_cache_.try_emplace(name, location);
+  return location;
 }
