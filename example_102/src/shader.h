@@ -56,6 +56,14 @@ public:
   void setUniform(char const *name, glm::vec3 const &value) const;
   void setUniform(char const *name, glm::vec4 const &value) const;
 
+  void setUniform(char const *name, glm::ivec2 const &value) const;
+  void setUniform(char const *name, glm::ivec3 const &value) const;
+  void setUniform(char const *name, glm::ivec4 const &value) const;
+
+  void setUniform(char const *name, glm::uvec2 const &value) const;
+  void setUniform(char const *name, glm::uvec3 const &value) const;
+  void setUniform(char const *name, glm::uvec4 const &value) const;
+
   void setUniform(char const *name, glm::mat2 const &value) const;
   void setUniform(char const *name, glm::mat3 const &value) const;
   void setUniform(char const *name, glm::mat4 const &value) const;

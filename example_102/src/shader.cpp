@@ -193,6 +193,48 @@ void Shader::setUniform(char const *name, glm::vec4 const &value) const {
   }
 }
 
+void Shader::setUniform(char const *name, glm::ivec2 const &value) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform2iv(id_, loc, 1, glm::value_ptr(value));
+  }
+}
+
+void Shader::setUniform(char const *name, glm::ivec3 const &value) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform3iv(id_, loc, 1, glm::value_ptr(value));
+  }
+}
+
+void Shader::setUniform(char const *name, glm::ivec4 const &value) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform4iv(id_, loc, 1, glm::value_ptr(value));
+  }
+}
+
+void Shader::setUniform(char const *name, glm::uvec2 const &value) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform2uiv(id_, loc, 1, glm::value_ptr(value));
+  }
+}
+
+void Shader::setUniform(char const *name, glm::uvec3 const &value) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform3uiv(id_, loc, 1, glm::value_ptr(value));
+  }
+}
+
+void Shader::setUniform(char const *name, glm::uvec4 const &value) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform4uiv(id_, loc, 1, glm::value_ptr(value));
+  }
+}
+
 void Shader::setUniform(char const *name, glm::mat2 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
