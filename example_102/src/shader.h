@@ -31,17 +31,17 @@ public:
 
   void use() const;
 
-  void setBool(char const *name, bool value) const;
-  void setInt(char const *name, std::int32_t value) const;
-  void setFloat(char const *name, float value) const;
+  void setUniform(char const *name, bool value) const;
+  void setUniform(char const *name, std::int32_t value) const;
+  void setUniform(char const *name, float value) const;
 
-  void setVec2(char const *name, glm::vec2 const &value) const;
-  void setVec3(char const *name, glm::vec3 const &value) const;
-  void setVec4(char const *name, glm::vec4 const &value) const;
+  void setUniform(char const *name, glm::vec2 const &value) const;
+  void setUniform(char const *name, glm::vec3 const &value) const;
+  void setUniform(char const *name, glm::vec4 const &value) const;
 
-  void setMat2(char const *name, glm::mat2 const &mat) const;
-  void setMat3(char const *name, glm::mat3 const &mat) const;
-  void setMat4(char const *name, glm::mat4 const &mat) const;
+  void setUniform(char const *name, glm::mat2 const &mat) const;
+  void setUniform(char const *name, glm::mat3 const &mat) const;
+  void setUniform(char const *name, glm::mat4 const &mat) const;
 
 private:
   struct StringHash final {

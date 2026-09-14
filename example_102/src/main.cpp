@@ -204,7 +204,7 @@ auto main() -> int {
   if (!shader.has_value()) {
     return EXIT_FAILURE;
   }
-  shader->setVec3("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
+  shader->setUniform("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
 
   Camera camera{};
 
@@ -287,9 +287,9 @@ auto main() -> int {
     glm::mat4 const projection{camera.computeProjectionMatrix(framebuffer_a)};
 
     shader->use();
-    shader->setMat4("u_model", model);
-    shader->setMat4("u_view", view);
-    shader->setMat4("u_projection", projection);
+    shader->setUniform("u_model", model);
+    shader->setUniform("u_view", view);
+    shader->setUniform("u_projection", projection);
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES,
                    static_cast<std::int32_t>(indices.size()),

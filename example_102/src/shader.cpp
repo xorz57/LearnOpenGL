@@ -73,63 +73,63 @@ void Shader::use() const {
   glUseProgram(id_);
 }
 
-void Shader::setBool(char const *name, bool value) const {
+void Shader::setUniform(char const *name, bool value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform1i(id_, loc, static_cast<std::int32_t>(value));
   }
 }
 
-void Shader::setInt(char const *name, std::int32_t value) const {
+void Shader::setUniform(char const *name, std::int32_t value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform1i(id_, loc, value);
   }
 }
 
-void Shader::setFloat(char const *name, float value) const {
+void Shader::setUniform(char const *name, float value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform1f(id_, loc, value);
   }
 }
 
-void Shader::setVec2(char const *name, glm::vec2 const &value) const {
+void Shader::setUniform(char const *name, glm::vec2 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform2fv(id_, loc, 1, glm::value_ptr(value));
   }
 }
 
-void Shader::setVec3(char const *name, glm::vec3 const &value) const {
+void Shader::setUniform(char const *name, glm::vec3 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform3fv(id_, loc, 1, glm::value_ptr(value));
   }
 }
 
-void Shader::setVec4(char const *name, glm::vec4 const &value) const {
+void Shader::setUniform(char const *name, glm::vec4 const &value) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniform4fv(id_, loc, 1, glm::value_ptr(value));
   }
 }
 
-void Shader::setMat2(char const *name, glm::mat2 const &mat) const {
+void Shader::setUniform(char const *name, glm::mat2 const &mat) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniformMatrix2fv(id_, loc, 1, GL_FALSE, glm::value_ptr(mat));
   }
 }
 
-void Shader::setMat3(char const *name, glm::mat3 const &mat) const {
+void Shader::setUniform(char const *name, glm::mat3 const &mat) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniformMatrix3fv(id_, loc, 1, GL_FALSE, glm::value_ptr(mat));
   }
 }
 
-void Shader::setMat4(char const *name, glm::mat4 const &mat) const {
+void Shader::setUniform(char const *name, glm::mat4 const &mat) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
     glProgramUniformMatrix4fv(id_, loc, 1, GL_FALSE, glm::value_ptr(mat));
