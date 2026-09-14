@@ -42,8 +42,8 @@ auto main() -> int {
   char const *title{"example_001"};
   std::int32_t const window_w{static_cast<std::int32_t>(1280 * main_scale)};
   std::int32_t const window_h{static_cast<std::int32_t>(720 * main_scale)};
-  SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
-  SDL_Window *window{SDL_CreateWindow(title, window_w, window_h, flags)};
+  SDL_WindowFlags const flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
+  SDL_Window *const window{SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
     spdlog::error("SDL window creation failed: {}", SDL_GetError());
     return EXIT_FAILURE;
@@ -51,7 +51,7 @@ auto main() -> int {
   spdlog::info("SDL window created successfully");
   auto window_cleanup{ScopeExit{[&]() -> void { SDL_DestroyWindow(window); }}};
 
-  SDL_GLContext gl_context{SDL_GL_CreateContext(window)};
+  SDL_GLContext const gl_context{SDL_GL_CreateContext(window)};
   if (gl_context == nullptr) {
     spdlog::error("SDL GL context creation failed: {}", SDL_GetError());
     return EXIT_FAILURE;
