@@ -33,9 +33,19 @@ public:
 
   void setUniform(char const *name, bool value) const;
 
-  void setUniform(char const *name, std::int32_t value) const;
+  // NOLINTBEGIN(readability-identifier-length)
+  void setUniform(char const *name, std::int32_t v0) const;
+  void setUniform(char const *name, std::int32_t v0, std::int32_t v1) const;
+  void setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const;
+  void setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const;
+  // NOLINTEND(readability-identifier-length)
 
-  void setUniform(char const *name, float value) const;
+  // NOLINTBEGIN(readability-identifier-length)
+  void setUniform(char const *name, float v0) const;
+  void setUniform(char const *name, float v0, float v1) const;
+  void setUniform(char const *name, float v0, float v1, float v2) const;
+  void setUniform(char const *name, float v0, float v1, float v2, float v3) const;
+  // NOLINTEND(readability-identifier-length)
 
   void setUniform(char const *name, glm::vec2 const &value) const;
   void setUniform(char const *name, glm::vec3 const &value) const;

@@ -80,17 +80,67 @@ void Shader::setUniform(char const *name, bool value) const {
   }
 }
 
-void Shader::setUniform(char const *name, std::int32_t value) const {
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, std::int32_t v0) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
-    glProgramUniform1i(id_, loc, value);
+    glProgramUniform1i(id_, loc, v0);
   }
 }
 
-void Shader::setUniform(char const *name, float value) const {
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1) const {
   std::int32_t const loc{getUniformLocation(name)};
   if (loc != -1) {
-    glProgramUniform1f(id_, loc, value);
+    glProgramUniform2i(id_, loc, v0, v1);
+  }
+}
+
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform3i(id_, loc, v0, v1, v2);
+  }
+}
+
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform4i(id_, loc, v0, v1, v2, v3);
+  }
+}
+
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, float v0) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform1f(id_, loc, v0);
+  }
+}
+
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, float v0, float v1) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform2f(id_, loc, v0, v1);
+  }
+}
+
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, float v0, float v1, float v2) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform3f(id_, loc, v0, v1, v2);
+  }
+}
+
+// NOLINTNEXTLINE(readability-identifier-length)
+void Shader::setUniform(char const *name, float v0, float v1, float v2, float v3) const {
+  std::int32_t const loc{getUniformLocation(name)};
+  if (loc != -1) {
+    glProgramUniform4f(id_, loc, v0, v1, v2, v3);
   }
 }
 
