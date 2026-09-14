@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include <cstdint>
 #include <filesystem>
 #include <functional>
 #include <optional>
