@@ -92,4 +92,5 @@ private:
 
   std::uint32_t id_{};
   mutable std::unordered_map<std::string, std::int32_t, StringHash, std::equal_to<>> uniform_location_cache_;
+  mutable bool logged_uninitialized_error_{false};
 };

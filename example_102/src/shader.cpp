@@ -13,13 +13,15 @@ Shader::Shader() = default;
 Shader::~Shader() noexcept { glDeleteProgram(id_); }
 
 Shader::Shader(Shader &&other) noexcept
-    : id_(std::exchange(other.id_, 0)), uniform_location_cache_(std::move(other.uniform_location_cache_)) {}
+    : id_(std::exchange(other.id_, 0)), uniform_location_cache_(std::move(other.uniform_location_cache_)),
+      logged_uninitialized_error_(std::exchange(other.logged_uninitialized_error_, false)) {}
 
 auto Shader::operator=(Shader &&other) noexcept -> Shader & {
   if (this != &other) {
     glDeleteProgram(id_);
     id_ = std::exchange(other.id_, 0);
     uniform_location_cache_ = std::move(other.uniform_location_cache_);
+    logged_uninitialized_error_ = std::exchange(other.logged_uninitialized_error_, false);
   }
   return *this;
 }
@@ -65,7 +67,10 @@ auto Shader::loadFromFile(std::filesystem::path const &vertex_shader_path,
 
 void Shader::use() const {
   if (id_ == 0) {
-    spdlog::error("Shader program not initialized");
+    if (!logged_uninitialized_error_) {
+      spdlog::error("Shader program not initialized");
+      logged_uninitialized_error_ = true;
+    }
     glUseProgram(0);
     return;
   }
@@ -302,6 +307,9 @@ auto Shader::verifyShaderCompiled(std::uint32_t shader, ShaderType type) -> bool
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
     std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
     glGetShaderInfoLog(shader, info_log_length, nullptr, info_log.data());
+    if (info_log_length > 0) {
+      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+    }
     switch (type) {
     case ShaderType::Vertex:
       spdlog::error("Shader compilation error [VERTEX]: {}", info_log);
@@ -323,6 +331,9 @@ auto Shader::verifyProgramLinked(std::uint32_t program) -> bool {
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
     std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
     glGetProgramInfoLog(program, info_log_length, nullptr, info_log.data());
+    if (info_log_length > 0) {
+      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+    }
     spdlog::error("Program linking error [PROGRAM]: {}", info_log);
     return false;
   }
@@ -331,7 +342,10 @@ auto Shader::verifyProgramLinked(std::uint32_t program) -> bool {
 
 auto Shader::getUniformLocation(char const *name) const -> std::int32_t {
   if (id_ == 0) {
-    spdlog::error("Shader program not initialized");
+    if (!logged_uninitialized_error_) {
+      spdlog::error("Shader program not initialized");
+      logged_uninitialized_error_ = true;
+    }
     return -1;
   }
 
