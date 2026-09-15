@@ -34,10 +34,6 @@ public:
 
   void setUniform(char const *name, bool value) const;
 
-  void setUniform(char const *name, glm::bvec2 const &value) const;
-  void setUniform(char const *name, glm::bvec3 const &value) const;
-  void setUniform(char const *name, glm::bvec4 const &value) const;
-
   // NOLINTBEGIN(readability-identifier-length)
 
   void setUniform(char const *name, float v0) const;
@@ -56,6 +52,10 @@ public:
   void setUniform(char const *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2, std::uint32_t v3) const;
 
   // NOLINTEND(readability-identifier-length)
+
+  void setUniform(char const *name, glm::bvec2 const &value) const;
+  void setUniform(char const *name, glm::bvec3 const &value) const;
+  void setUniform(char const *name, glm::bvec4 const &value) const;
 
   void setUniform(char const *name, glm::vec2 const &value) const;
   void setUniform(char const *name, glm::vec3 const &value) const;
