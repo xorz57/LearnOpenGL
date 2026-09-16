@@ -51,7 +51,7 @@ auto main() -> int {
   float const main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
 
   char const *title{"example_102"};
-  std::int32_t const window_w{static_cast<std::int32_t>(1280 * main_scale)};
+  std::int32_t const window_w{static_cast<std::int32_t>(1'280 * main_scale)};
   std::int32_t const window_h{static_cast<std::int32_t>(720 * main_scale)};
   SDL_WindowFlags const flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
                               SDL_WINDOW_HIGH_PIXEL_DENSITY};
@@ -215,7 +215,7 @@ auto main() -> int {
 
   while (!done) {
     std::uint64_t const current_frame_ticks{SDL_GetTicks()};
-    float const delta_time{static_cast<float>(current_frame_ticks - last_frame_ticks) / 1000.0F};
+    float const delta_time{static_cast<float>(current_frame_ticks - last_frame_ticks) / 1'000.0F};
     last_frame_ticks = current_frame_ticks;
 
     SDL_Event event;
