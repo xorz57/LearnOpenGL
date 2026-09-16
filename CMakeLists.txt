@@ -23,6 +23,7 @@ set(SDL_TEST_LIBRARY
     CACHE BOOL "" FORCE)
 
 add_subdirectory(vendor/assimp EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/box3d EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/glad EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/glm EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)

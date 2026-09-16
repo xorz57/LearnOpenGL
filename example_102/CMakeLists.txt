@@ -14,6 +14,7 @@ endif()
 target_link_libraries(
   example_102
   PRIVATE assimp::assimp
+          box3d::box3d
           glad::glad
           glm::glm
           SDL3::SDL3
