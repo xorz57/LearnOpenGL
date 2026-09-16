@@ -6,6 +6,8 @@
 #include <spdlog/spdlog.h>
 
 #include <cmath>
+#include <cstdint>
+#include <cstdlib>
 #include <utility>
 
 template <typename Function> class ScopeExit final {

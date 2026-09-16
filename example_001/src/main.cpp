@@ -2,6 +2,8 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
+#include <cstdint>
+#include <cstdlib>
 #include <utility>
 
 template <typename Function> class ScopeExit final {

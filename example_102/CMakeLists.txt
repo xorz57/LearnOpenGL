@@ -1,5 +1,6 @@
 add_executable(example_102)
-target_sources(example_102 PRIVATE src/main.cpp src/shader.cpp src/camera.cpp src/stb_image_impl.cpp)
+target_sources(example_102 PRIVATE src/main.cpp src/shader.cpp src/camera.cpp
+                                   src/stb_image_impl.cpp)
 target_include_directories(example_102 PRIVATE src)
 find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy)
 if(CLANG_TIDY_PROGRAM)

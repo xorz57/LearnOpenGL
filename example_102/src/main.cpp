@@ -11,6 +11,8 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <utility>
 
 template <typename Function> class ScopeExit final {
