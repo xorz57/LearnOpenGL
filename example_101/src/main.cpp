@@ -1,7 +1,7 @@
 #include <SDL3/SDL.h>
-#include <glad/gl.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
+#include <glad/gl.h>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
 
