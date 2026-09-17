@@ -237,6 +237,12 @@ auto main() -> int {
           camera.processMouseMovement(event.motion.xrel, -event.motion.yrel);
         }
         break;
+      case SDL_EVENT_KEY_DOWN:
+        if (!event.key.repeat && event.key.key == SDLK_RETURN && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
+          bool const is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)};
+          SDL_SetWindowFullscreen(window, !is_fullscreen);
+        }
+        break;
       default:
         break;
       }
@@ -286,6 +292,7 @@ auto main() -> int {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float const framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
+
     glm::mat4 const model{1.0F};
     glm::mat4 const view{camera.computeViewMatrix()};
     glm::mat4 const projection{camera.computeProjectionMatrix(framebuffer_a)};

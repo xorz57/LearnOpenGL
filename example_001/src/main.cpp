@@ -112,6 +112,8 @@ auto main() -> int {
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // TODO
+
     SDL_GL_SwapWindow(window);
   }
 
