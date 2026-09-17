@@ -15,14 +15,14 @@ else()
   target_compile_options(example_102 PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_link_libraries(example_102 PRIVATE assimp::assimp)
-target_link_libraries(example_102 PRIVATE box3d::box3d)
+# target_link_libraries(example_102 PRIVATE assimp::assimp)
+# target_link_libraries(example_102 PRIVATE box3d::box3d)
 target_link_libraries(example_102 PRIVATE glad::glad)
 target_link_libraries(example_102 PRIVATE glm::glm)
 target_link_libraries(example_102 PRIVATE SDL3::SDL3)
 target_link_libraries(example_102 PRIVATE spdlog::spdlog)
 target_link_libraries(example_102 PRIVATE imgui::imgui)
-target_link_libraries(example_102 PRIVATE stb::image)
+target_link_libraries(example_102 PRIVATE stb::stb)
 
 target_compile_definitions(
   example_102 PRIVATE ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
