@@ -42,7 +42,7 @@ auto main() -> int {
   float const main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
 
   char const *title{"example_001"};
-  std::int32_t const window_w{static_cast<std::int32_t>(1280 * main_scale)};
+  std::int32_t const window_w{static_cast<std::int32_t>(1'280 * main_scale)};
   std::int32_t const window_h{static_cast<std::int32_t>(720 * main_scale)};
   SDL_WindowFlags const flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
                               SDL_WINDOW_HIGH_PIXEL_DENSITY};
