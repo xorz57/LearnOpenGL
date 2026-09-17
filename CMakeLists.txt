@@ -40,12 +40,12 @@ target_sources(
           vendor/imgui/imgui.cpp
           vendor/imgui/backends/imgui_impl_sdl3.cpp
           vendor/imgui/backends/imgui_impl_opengl3.cpp)
-target_include_directories(imgui PUBLIC vendor vendor/imgui)
+target_include_directories(imgui PUBLIC vendor/imgui)
 target_link_libraries(imgui PRIVATE SDL3::SDL3 ${CMAKE_DL_LIBS})
 
 add_library(stb INTERFACE)
 add_library(stb::stb ALIAS stb)
-target_include_directories(stb INTERFACE vendor)
+target_include_directories(stb INTERFACE vendor/stb)
 
 add_subdirectory(example_001)
 add_subdirectory(example_101)
