@@ -6,6 +6,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
 #include <glad/gl.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
 
@@ -207,7 +208,6 @@ auto main() -> int {
   if (!shader.has_value()) {
     return EXIT_FAILURE;
   }
-  shader->setUniform("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
 
   Camera camera{};
 
@@ -293,14 +293,37 @@ auto main() -> int {
 
     float const framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
 
-    glm::mat4 const model{1.0F};
-    glm::mat4 const view{camera.computeViewMatrix()};
     glm::mat4 const projection{camera.computeProjectionMatrix(framebuffer_a)};
+    glm::mat4 const view{camera.computeViewMatrix()};
 
     shader->use();
-    shader->setUniform("u_model", model);
-    shader->setUniform("u_view", view);
     shader->setUniform("u_projection", projection);
+    shader->setUniform("u_view", view);
+
+    glm::mat4 model1{1.0F};
+    model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
+    shader->setUniform("u_model", model1);
+    shader->setUniform("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES,
+                   static_cast<std::int32_t>(indices.size()),
+                   GL_UNSIGNED_INT,
+                   static_cast<void *>(nullptr));
+
+    glm::mat4 model2{1.0F};
+    model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
+    shader->setUniform("u_model", model2);
+    shader->setUniform("u_color", glm::vec3{0.0F, 1.0F, 0.0F});
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES,
+                   static_cast<std::int32_t>(indices.size()),
+                   GL_UNSIGNED_INT,
+                   static_cast<void *>(nullptr));
+
+    glm::mat4 model3{1.0F};
+    model3 = glm::scale(model3, {5.0F, 1.0F, 5.0F});
+    shader->setUniform("u_model", model3);
+    shader->setUniform("u_color", glm::vec3{0.0F, 0.0F, 1.0F});
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES,
                    static_cast<std::int32_t>(indices.size()),
