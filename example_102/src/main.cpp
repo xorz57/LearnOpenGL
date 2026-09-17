@@ -203,7 +203,7 @@ auto main() -> int {
   glVertexArrayAttribBinding(vao, 2, 0);
 
   std::optional<Shader> shader{
-      Shader::loadFromFile(ASSETS_DIR "shaders/default.vert.glsl", ASSETS_DIR "shaders/default.frag.glsl")};
+      Shader::loadFromFile(ASSETS_DIR "shaders/unlit_color.vert.glsl", ASSETS_DIR "shaders/unlit_color.frag.glsl")};
   if (!shader.has_value()) {
     return EXIT_FAILURE;
   }
