@@ -175,14 +175,15 @@ auto main() -> int {
 
   std::uint32_t vbo{};
   std::uint32_t ebo{};
+
   std::uint32_t vao{};
 
   glCreateBuffers(1, &vbo);
   glCreateBuffers(1, &ebo);
-  glCreateVertexArrays(1, &vao);
-
   auto vbo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vbo); }}};
   auto ebo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ebo); }}};
+
+  glCreateVertexArrays(1, &vao);
   auto vao_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vao); }}};
 
   glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
@@ -199,9 +200,9 @@ auto main() -> int {
   glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
   glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
 
-  glVertexArrayAttribBinding(vao, 0, 0);
-  glVertexArrayAttribBinding(vao, 1, 0);
-  glVertexArrayAttribBinding(vao, 2, 0);
+  // glVertexArrayAttribBinding(vao, 0, 0);
+  // glVertexArrayAttribBinding(vao, 1, 0);
+  // glVertexArrayAttribBinding(vao, 2, 0);
 
   std::optional<Shader> shader{
       Shader::loadFromFile(ASSETS_DIR "shaders/unlit_color.vert.glsl", ASSETS_DIR "shaders/unlit_color.frag.glsl")};
