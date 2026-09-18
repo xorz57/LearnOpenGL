@@ -173,35 +173,62 @@ auto main() -> int {
       20, 21, 22, 22, 23, 20, // Bottom
   };
 
+  std::vector<glm::mat4> models{
+      glm::translate(glm::mat4(1.0F), {-1.0F, 2.0F, -1.0F}),
+      glm::translate(glm::mat4(1.0F), {1.0F, 2.0F, 1.0F}),
+      glm::scale(glm::mat4(1.0F), {5.0F, 1.0F, 5.0F}),
+  };
+
   std::uint32_t vbo{};
   std::uint32_t ebo{};
+  std::uint32_t instance_buffer{};
+
   std::uint32_t vao{};
 
   glCreateBuffers(1, &vbo);
   glCreateBuffers(1, &ebo);
-  glCreateVertexArrays(1, &vao);
-
+  glCreateBuffers(1, &instance_buffer);
   auto vbo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vbo); }}};
   auto ebo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ebo); }}};
+  auto instance_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &instance_buffer); }}};
+
+  glCreateVertexArrays(1, &vao);
   auto vao_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vao); }}};
 
   glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
   glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
+  glNamedBufferStorage(instance_buffer, static_cast<std::ptrdiff_t>(models.size() * sizeof(glm::mat4)), models.data(), 0);
 
   glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(Vertex));
+  glVertexArrayVertexBuffer(vao, 1, instance_buffer, 0, sizeof(glm::mat4));
   glVertexArrayElementBuffer(vao, ebo);
 
   glEnableVertexArrayAttrib(vao, 0);
   glEnableVertexArrayAttrib(vao, 1);
   glEnableVertexArrayAttrib(vao, 2);
+  glEnableVertexArrayAttrib(vao, 3);
+  glEnableVertexArrayAttrib(vao, 4);
+  glEnableVertexArrayAttrib(vao, 5);
+  glEnableVertexArrayAttrib(vao, 6);
 
   glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
   glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
   glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+  glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayAttribFormat(vao, 4, 4, GL_FLOAT, GL_FALSE, 1 * sizeof(glm::vec4));
+  glVertexArrayAttribFormat(vao, 5, 4, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec4));
+  glVertexArrayAttribFormat(vao, 6, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec4));
 
-  glVertexArrayAttribBinding(vao, 0, 0);
-  glVertexArrayAttribBinding(vao, 1, 0);
-  glVertexArrayAttribBinding(vao, 2, 0);
+  // glVertexArrayBindingDivisor(vao, 0, 0);
+  glVertexArrayBindingDivisor(vao, 1, 1);
+
+  // glVertexArrayAttribBinding(vao, 0, 0);
+  // glVertexArrayAttribBinding(vao, 1, 0);
+  // glVertexArrayAttribBinding(vao, 2, 0);
+  glVertexArrayAttribBinding(vao, 3, 1);
+  glVertexArrayAttribBinding(vao, 4, 1);
+  glVertexArrayAttribBinding(vao, 5, 1);
+  glVertexArrayAttribBinding(vao, 6, 1);
 
   std::optional<Shader> shader{
       Shader::loadFromFile(ASSETS_DIR "shaders/unlit_color.vert.glsl", ASSETS_DIR "shaders/unlit_color.frag.glsl")};
@@ -300,35 +327,13 @@ auto main() -> int {
     shader->setUniform("u_projection", projection);
     shader->setUniform("u_view", view);
 
-    glm::mat4 model1{1.0F};
-    model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
-    shader->setUniform("u_model", model1);
     shader->setUniform("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES,
+    glDrawElementsInstanced(GL_TRIANGLES,
                    static_cast<std::int32_t>(indices.size()),
                    GL_UNSIGNED_INT,
-                   static_cast<void *>(nullptr));
-
-    glm::mat4 model2{1.0F};
-    model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
-    shader->setUniform("u_model", model2);
-    shader->setUniform("u_color", glm::vec3{0.0F, 1.0F, 0.0F});
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES,
-                   static_cast<std::int32_t>(indices.size()),
-                   GL_UNSIGNED_INT,
-                   static_cast<void *>(nullptr));
-
-    glm::mat4 model3{1.0F};
-    model3 = glm::scale(model3, {5.0F, 1.0F, 5.0F});
-    shader->setUniform("u_model", model3);
-    shader->setUniform("u_color", glm::vec3{0.0F, 0.0F, 1.0F});
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES,
-                   static_cast<std::int32_t>(indices.size()),
-                   GL_UNSIGNED_INT,
-                   static_cast<void *>(nullptr));
+                   static_cast<void *>(nullptr),
+                  static_cast<std::int32_t>(models.size()));
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
