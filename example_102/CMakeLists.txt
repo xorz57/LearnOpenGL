@@ -4,7 +4,7 @@ target_sources(example_102 PRIVATE src/main.cpp src/shader.cpp src/camera.cpp
 target_include_directories(example_102 PRIVATE src)
 
 find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy)
-if(CLANG_TIDY_PROGRAM)
+if(CLANG_TIDY_PROGRAM AND NOT ENABLE_TIME_TRACE)
   set_target_properties(example_102 PROPERTIES CXX_CLANG_TIDY
                                                "${CLANG_TIDY_PROGRAM}")
 endif()
