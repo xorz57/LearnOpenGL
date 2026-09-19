@@ -173,10 +173,15 @@ auto main() -> int {
       20, 21, 22, 22, 23, 20, // Bottom
   };
 
-  std::vector<glm::mat4> const models{
-      glm::translate(glm::mat4(1.0F), {-1.0F, 2.0F, -1.0F}),
-      glm::translate(glm::mat4(1.0F), {1.0F, 2.0F, 1.0F}),
-      glm::scale(glm::mat4(1.0F), {5.0F, 1.0F, 5.0F}),
+  struct InstanceData {
+    glm::mat4 model;
+    glm::vec3 color;
+  };
+
+  std::vector<InstanceData> const instances{
+      {.model = glm::translate(glm::mat4(1.0F), {-1.0F, 2.0F, -1.0F}), .color = {1.0F, 0.0F, 0.0F}},
+      {.model = glm::translate(glm::mat4(1.0F), {1.0F, 2.0F, 1.0F}), .color = {0.0F, 1.0F, 0.0F}},
+      {.model = glm::scale(glm::mat4(1.0F), {5.0F, 1.0F, 5.0F}), .color = {0.0F, 0.0F, 1.0F}},
   };
 
   std::uint32_t vbo{};
@@ -197,10 +202,10 @@ auto main() -> int {
 
   glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
   glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
-  glNamedBufferStorage(ibo, static_cast<std::ptrdiff_t>(models.size() * sizeof(glm::mat4)), models.data(), 0);
+  glNamedBufferStorage(ibo, static_cast<std::ptrdiff_t>(instances.size() * sizeof(InstanceData)), instances.data(), 0);
 
   glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(Vertex));
-  glVertexArrayVertexBuffer(vao, 1, ibo, 0, sizeof(glm::mat4));
+  glVertexArrayVertexBuffer(vao, 1, ibo, 0, sizeof(InstanceData));
   glVertexArrayElementBuffer(vao, ebo);
 
   glEnableVertexArrayAttrib(vao, 0);
@@ -210,14 +215,16 @@ auto main() -> int {
   glEnableVertexArrayAttrib(vao, 4);
   glEnableVertexArrayAttrib(vao, 5);
   glEnableVertexArrayAttrib(vao, 6);
+  glEnableVertexArrayAttrib(vao, 7);
 
   glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
   glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
   glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
-  glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, 0);
-  glVertexArrayAttribFormat(vao, 4, 4, GL_FLOAT, GL_FALSE, 1 * sizeof(glm::vec4));
-  glVertexArrayAttribFormat(vao, 5, 4, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec4));
-  glVertexArrayAttribFormat(vao, 6, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec4));
+  glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceData, model) + (0 * sizeof(glm::vec4)));
+  glVertexArrayAttribFormat(vao, 4, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceData, model) + (1 * sizeof(glm::vec4)));
+  glVertexArrayAttribFormat(vao, 5, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceData, model) + (2 * sizeof(glm::vec4)));
+  glVertexArrayAttribFormat(vao, 6, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceData, model) + (3 * sizeof(glm::vec4)));
+  glVertexArrayAttribFormat(vao, 7, 3, GL_FLOAT, GL_FALSE, offsetof(InstanceData, color));
 
   // glVertexArrayBindingDivisor(vao, 0, 0);
   glVertexArrayBindingDivisor(vao, 1, 1);
@@ -229,6 +236,7 @@ auto main() -> int {
   glVertexArrayAttribBinding(vao, 4, 1);
   glVertexArrayAttribBinding(vao, 5, 1);
   glVertexArrayAttribBinding(vao, 6, 1);
+  glVertexArrayAttribBinding(vao, 7, 1);
 
   std::optional<Shader> shader{
       Shader::loadFromFile(ASSETS_DIR "shaders/unlit_color.vert.glsl", ASSETS_DIR "shaders/unlit_color.frag.glsl")};
@@ -327,13 +335,12 @@ auto main() -> int {
     shader->setUniform("u_projection", projection);
     shader->setUniform("u_view", view);
 
-    shader->setUniform("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
     glBindVertexArray(vao);
     glDrawElementsInstanced(GL_TRIANGLES,
                             static_cast<std::int32_t>(indices.size()),
                             GL_UNSIGNED_INT,
                             static_cast<void *>(nullptr),
-                            static_cast<std::int32_t>(models.size()));
+                            static_cast<std::int32_t>(instances.size()));
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
