@@ -131,7 +131,7 @@ auto main() -> int {
   ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  std::vector<Vertex> vertices{
+  std::vector<Vertex> const vertices{
       // Front (+z)
       {.position = {-0.5F, -0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {0.0F, 0.0F}},
       {.position = {0.5F, -0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {1.0F, 0.0F}},
@@ -164,7 +164,7 @@ auto main() -> int {
       {.position = {-0.5F, -0.5F, 0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {0.0F, 1.0F}},
   };
 
-  std::vector<uint32_t> indices{
+  std::vector<uint32_t> const indices{
       0,  1,  2,  2,  3,  0,  // Front
       4,  5,  6,  6,  7,  4,  // Back
       8,  9,  10, 10, 11, 8,  // Left
@@ -173,7 +173,7 @@ auto main() -> int {
       20, 21, 22, 22, 23, 20, // Bottom
   };
 
-  std::vector<glm::mat4> models{
+  std::vector<glm::mat4> const models{
       glm::translate(glm::mat4(1.0F), {-1.0F, 2.0F, -1.0F}),
       glm::translate(glm::mat4(1.0F), {1.0F, 2.0F, 1.0F}),
       glm::scale(glm::mat4(1.0F), {5.0F, 1.0F, 5.0F}),
@@ -181,26 +181,26 @@ auto main() -> int {
 
   std::uint32_t vbo{};
   std::uint32_t ebo{};
-  std::uint32_t instance_buffer{};
+  std::uint32_t ibo{};
 
   std::uint32_t vao{};
 
   glCreateBuffers(1, &vbo);
   glCreateBuffers(1, &ebo);
-  glCreateBuffers(1, &instance_buffer);
+  glCreateBuffers(1, &ibo);
   auto vbo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vbo); }}};
   auto ebo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ebo); }}};
-  auto instance_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &instance_buffer); }}};
+  auto instance_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ibo); }}};
 
   glCreateVertexArrays(1, &vao);
   auto vao_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vao); }}};
 
   glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
   glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
-  glNamedBufferStorage(instance_buffer, static_cast<std::ptrdiff_t>(models.size() * sizeof(glm::mat4)), models.data(), 0);
+  glNamedBufferStorage(ibo, static_cast<std::ptrdiff_t>(models.size() * sizeof(glm::mat4)), models.data(), 0);
 
   glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(Vertex));
-  glVertexArrayVertexBuffer(vao, 1, instance_buffer, 0, sizeof(glm::mat4));
+  glVertexArrayVertexBuffer(vao, 1, ibo, 0, sizeof(glm::mat4));
   glVertexArrayElementBuffer(vao, ebo);
 
   glEnableVertexArrayAttrib(vao, 0);
@@ -330,10 +330,10 @@ auto main() -> int {
     shader->setUniform("u_color", glm::vec3{1.0F, 0.0F, 0.0F});
     glBindVertexArray(vao);
     glDrawElementsInstanced(GL_TRIANGLES,
-                   static_cast<std::int32_t>(indices.size()),
-                   GL_UNSIGNED_INT,
-                   static_cast<void *>(nullptr),
-                  static_cast<std::int32_t>(models.size()));
+                            static_cast<std::int32_t>(indices.size()),
+                            GL_UNSIGNED_INT,
+                            static_cast<void *>(nullptr),
+                            static_cast<std::int32_t>(models.size()));
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
