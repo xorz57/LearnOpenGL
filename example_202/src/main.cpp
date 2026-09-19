@@ -191,7 +191,7 @@ auto main() -> int {
   glCreateBuffers(1, &ibo);
   auto vbo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &vbo); }}};
   auto ebo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ebo); }}};
-  auto instance_buffer_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ibo); }}};
+  auto ibo_cleanup{ScopeExit{[&]() -> void { glDeleteBuffers(1, &ibo); }}};
 
   glCreateVertexArrays(1, &vao);
   auto vao_cleanup{ScopeExit{[&]() -> void { glDeleteVertexArrays(1, &vao); }}};
