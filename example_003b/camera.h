@@ -23,7 +23,7 @@ class Camera final {
   auto ProcessKeyboard(Movement direction, float delta_time, float speed_multiplier = 1.0F) -> void;
   auto ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true) -> void;
 
-  [[nodiscard]] auto GetPosition() const -> glm::vec3 { return position_; }
+  [[nodiscard]] auto GetPosition() const noexcept -> glm::vec3 { return position_; }
 
  private:
   auto UpdateCameraVectors() -> void;
