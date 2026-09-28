@@ -84,7 +84,7 @@ auto Mesh::Reset() noexcept -> void {
   indices_size_ = 0;
 }
 
-auto Mesh::Draw() const -> void {
+auto Mesh::Draw() const noexcept -> void {
   ::glBindVertexArray(vao_);
   ::glDrawElements(GL_TRIANGLES, static_cast<std::int32_t>(indices_size_), GL_UNSIGNED_INT, static_cast<void*>(nullptr));
 }

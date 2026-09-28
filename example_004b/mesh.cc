@@ -123,7 +123,7 @@ auto Mesh::Reset() noexcept -> void {
   instances_size_ = 0;
 }
 
-auto Mesh::Draw() const -> void {
+auto Mesh::Draw() const noexcept -> void {
   ::glBindVertexArray(vao_);
   ::glDrawElementsInstanced(GL_TRIANGLES, static_cast<std::int32_t>(indices_size_), GL_UNSIGNED_INT, static_cast<void*>(nullptr), static_cast<std::int32_t>(instances_size_));
 }

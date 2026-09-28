@@ -28,7 +28,7 @@ class Mesh final {
 
   auto Reset() noexcept -> void;
 
-  auto Draw() const -> void;
+  auto Draw() const noexcept -> void;
 
  private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
