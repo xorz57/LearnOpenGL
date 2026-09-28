@@ -21,9 +21,9 @@ auto Camera::ComputeViewMatrix() const -> glm::mat4 { return glm::lookAt(positio
 
 auto Camera::ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4 { return glm::perspective(glm::radians(kFov), aspect_ratio, kNearPlane, kFarPlane); }
 
-auto Camera::ProcessKeyboard(Movement direction, float delta_time, float speed_multiplier) -> void {
+auto Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) -> void {
   const float velocity{kMovementSpeed * speed_multiplier * delta_time};
-  switch (direction) {
+  switch (movement) {
     case Movement::kForward:
       position_ += front_ * velocity;
       break;
