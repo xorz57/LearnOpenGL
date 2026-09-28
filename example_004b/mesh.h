@@ -11,9 +11,9 @@
 class Mesh final {
  public:
   enum class Error : std::uint8_t {
-    kEmptyVertices,
-    kEmptyIndices,
-    kEmptyInstances,
+    kVerticesEmpty,
+    kIndicesEmpty,
+    kInstancesEmpty,
   };
 
   ~Mesh();

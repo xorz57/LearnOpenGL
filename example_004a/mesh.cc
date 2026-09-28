@@ -29,11 +29,11 @@ auto Mesh::operator=(Mesh&& other) noexcept -> Mesh& {
 auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices) -> std::expected<Mesh, Error> {
   if (vertices.empty()) {
     spdlog::error("Mesh has no vertices");
-    return std::unexpected{Error::kEmptyVertices};
+    return std::unexpected{Error::kVerticesEmpty};
   }
   if (indices.empty()) {
     spdlog::error("Mesh has no indices");
-    return std::unexpected{Error::kEmptyIndices};
+    return std::unexpected{Error::kIndicesEmpty};
   }
 
   std::uint32_t vbo{};
