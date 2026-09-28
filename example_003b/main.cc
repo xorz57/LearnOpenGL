@@ -76,9 +76,6 @@ auto main() -> int {
   }
   spdlog::info("GLAD initialized successfully");
 
-  ::glEnable(GL_DEPTH_TEST);
-  ::glEnable(GL_CULL_FACE);
-
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("OpenGL version: {}", reinterpret_cast<const char*>(::glGetString(GL_VERSION)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -87,6 +84,9 @@ auto main() -> int {
   spdlog::info("Vendor: {}", reinterpret_cast<const char*>(::glGetString(GL_VENDOR)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("Renderer: {}", reinterpret_cast<const char*>(::glGetString(GL_RENDERER)));
+
+  ::glEnable(GL_DEPTH_TEST);
+  ::glEnable(GL_CULL_FACE);
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
