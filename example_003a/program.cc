@@ -44,6 +44,11 @@ auto Program::operator=(Program&& other) noexcept -> Program& {
 
 auto Program::Create(const Shader& vertex_shader, const Shader& fragment_shader) -> std::expected<Program, Error> {
   const std::uint32_t handle{::glCreateProgram()};
+  if (handle == 0) {
+    spdlog::error("Failed to create program");
+    return std::unexpected{Error::kCreateFailed};
+  }
+
   ::glAttachShader(handle, vertex_shader.GetHandle());
   ::glAttachShader(handle, fragment_shader.GetHandle());
   ::glLinkProgram(handle);

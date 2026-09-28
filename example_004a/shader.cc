@@ -26,7 +26,17 @@ auto Shader::operator=(Shader&& other) noexcept -> Shader& {
 }
 
 auto Shader::Create(Type type, const char* source) -> std::expected<Shader, Error> {
+  if (source == nullptr) {
+    spdlog::error("Shader source is null");
+    return std::unexpected{Error::kSourceNull};
+  }
+
   const std::uint32_t handle{::glCreateShader(type == Type::kVertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER)};
+  if (handle == 0) {
+    spdlog::error("Failed to create {} shader", type == Type::kVertex ? "vertex" : "fragment");
+    return std::unexpected{Error::kCreateFailed};
+  }
+
   ::glShaderSource(handle, 1, &source, nullptr);
   ::glCompileShader(handle);
 

@@ -14,6 +14,8 @@ class Shader final {
   enum class Error : std::uint8_t {
     kFileOpenFailed,
     kFileEmpty,
+    kSourceNull,
+    kCreateFailed,
     kCompileFailed,
   };
 

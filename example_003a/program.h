@@ -10,6 +10,7 @@
 class Program final {
  public:
   enum class Error : std::uint8_t {
+    kCreateFailed,
     kLinkFailed,
   };
 
