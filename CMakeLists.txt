@@ -16,3 +16,4 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(ClangTidy)
 
 add_subdirectory(example_001)
+add_subdirectory(example_002)
