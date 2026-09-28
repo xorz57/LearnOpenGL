@@ -1,0 +1,14 @@
+---
+BasedOnStyle: Google
+Language: Cpp
+QualifierAlignment: Left
+ColumnLimit: 200
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"'
+    Priority: 1
+  - Regex: '\.(h|hpp)>$'
+    Priority: 2
+  - Regex: '^<'
+    Priority: 3
+...
