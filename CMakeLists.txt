@@ -17,3 +17,4 @@ include(ClangTidy)
 
 add_subdirectory(example_001)
 add_subdirectory(example_002)
+add_subdirectory(example_003a)
