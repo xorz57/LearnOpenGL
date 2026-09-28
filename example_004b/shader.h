@@ -12,9 +12,9 @@ class Shader final {
   };
 
   enum class Error : std::uint8_t {
-    kCompileFailed,
     kFileOpenFailed,
     kFileEmpty,
+    kCompileFailed,
   };
 
   ~Shader();
