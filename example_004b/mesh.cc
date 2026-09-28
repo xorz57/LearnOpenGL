@@ -102,7 +102,7 @@ auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_
   return Mesh{vbo, ebo, ibo, vao, indices.size(), instances.size()};
 }
 
-auto Mesh::Reset() noexcept -> void {
+auto Mesh::Reset() -> void {
   if (vao_ != 0) {
     ::glDeleteVertexArrays(1, &vao_);
     vao_ = 0;
@@ -123,7 +123,7 @@ auto Mesh::Reset() noexcept -> void {
   instances_size_ = 0;
 }
 
-auto Mesh::Draw() const noexcept -> void {
+auto Mesh::Draw() const -> void {
   ::glBindVertexArray(vao_);
   ::glDrawElementsInstanced(GL_TRIANGLES, static_cast<std::int32_t>(indices_size_), GL_UNSIGNED_INT, static_cast<void*>(nullptr), static_cast<std::int32_t>(instances_size_));
 }

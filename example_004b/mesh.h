@@ -26,13 +26,13 @@ class Mesh final {
 
   [[nodiscard]] static auto Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices, std::span<const Instance> instances) -> std::expected<Mesh, Error>;
 
-  auto Reset() noexcept -> void;
+  auto Reset() -> void;
 
-  auto Draw() const noexcept -> void;
+  auto Draw() const -> void;
 
  private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  explicit Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t ibo, std::uint32_t vao, std::size_t indices_size, std::size_t instances_size) noexcept
+  explicit Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t ibo, std::uint32_t vao, std::size_t indices_size, std::size_t instances_size)
       : vbo_{vbo}, ebo_{ebo}, ibo_{ibo}, vao_{vao}, indices_size_{indices_size}, instances_size_{instances_size} {}
 
   std::uint32_t vbo_{};

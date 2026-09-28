@@ -15,18 +15,18 @@ class Camera final {
     kDown,
   };
 
-  explicit Camera(const glm::vec3& position = {0.0F, 0.0F, 0.0F}) noexcept;
+  explicit Camera(const glm::vec3& position = {0.0F, 0.0F, 0.0F});
 
-  [[nodiscard]] auto ComputeViewMatrix() const noexcept -> glm::mat4;
-  [[nodiscard]] static auto ComputeProjectionMatrix(float aspect_ratio) noexcept -> glm::mat4;
+  [[nodiscard]] auto ComputeViewMatrix() const -> glm::mat4;
+  [[nodiscard]] static auto ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4;
 
-  auto ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F) noexcept -> void;
-  auto ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true) noexcept -> void;
+  auto ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F) -> void;
+  auto ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true) -> void;
 
-  [[nodiscard]] auto GetPosition() const noexcept -> glm::vec3 { return position_; }
+  [[nodiscard]] auto GetPosition() const -> glm::vec3 { return position_; }
 
  private:
-  auto UpdateCameraVectors() noexcept -> void;
+  auto UpdateCameraVectors() -> void;
 
   glm::vec3 position_;
   glm::vec3 front_{0.0F, 0.0F, -1.0F};

@@ -24,9 +24,9 @@ class Program final {
 
   [[nodiscard]] static auto Create(const Shader& vertex_shader, const Shader& fragment_shader) -> std::expected<Program, Error>;
 
-  auto Reset() noexcept -> void;
+  auto Reset() -> void;
 
-  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t { return handle_; }
+  [[nodiscard]] auto GetHandle() const -> std::uint32_t { return handle_; }
 
   auto Use() const -> void;
 
@@ -68,7 +68,7 @@ class Program final {
   auto SetUniform(const char* name, const glm::mat4& value) const -> void;
 
  private:
-  explicit Program(std::uint32_t handle) noexcept : handle_{handle} {}
+  explicit Program(std::uint32_t handle) : handle_{handle} {}
 
   std::uint32_t handle_{};
 };

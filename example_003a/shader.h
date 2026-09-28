@@ -30,12 +30,12 @@ class Shader final {
   [[nodiscard]] static auto Create(Type type, const char* source) -> std::expected<Shader, Error>;
   [[nodiscard]] static auto CreateFromFile(Type type, const std::filesystem::path& path) -> std::expected<Shader, Error>;
 
-  auto Reset() noexcept -> void;
+  auto Reset() -> void;
 
-  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t { return handle_; }
+  [[nodiscard]] auto GetHandle() const -> std::uint32_t { return handle_; }
 
  private:
-  explicit Shader(std::uint32_t handle) noexcept : handle_{handle} {}
+  explicit Shader(std::uint32_t handle) : handle_{handle} {}
 
   std::uint32_t handle_{};
 };
