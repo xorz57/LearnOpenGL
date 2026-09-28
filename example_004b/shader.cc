@@ -42,7 +42,6 @@ auto Shader::Create(Type type, const char* source) -> std::expected<Shader, Erro
     }
 
     ::glDeleteShader(handle);
-
     spdlog::error("Failed to compile {} shader: {}", type == Type::kVertex ? "vertex" : "fragment", info_log);
     return std::unexpected{Error::kCompileFailed};
   }
