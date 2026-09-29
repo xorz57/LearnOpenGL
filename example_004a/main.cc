@@ -40,7 +40,11 @@ auto main() -> int {
   ::SDL_GL_SetAttribute(::SDL_GL_DEPTH_SIZE, 24);
   ::SDL_GL_SetAttribute(::SDL_GL_STENCIL_SIZE, 8);
 
-  const float main_scale{::SDL_GetDisplayContentScale(::SDL_GetPrimaryDisplay())};
+  float main_scale{::SDL_GetDisplayContentScale(::SDL_GetPrimaryDisplay())};
+  if (main_scale == 0.0F) {
+    spdlog::warn("Failed to get display content scale: {}", ::SDL_GetError());
+    main_scale = 1.0F;
+  }
 
   const char* title{"example_004a"};
   const auto window_w{static_cast<std::int32_t>(1'280 * main_scale)};
