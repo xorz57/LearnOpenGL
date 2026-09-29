@@ -15,9 +15,9 @@
 
 Shader::~Shader() { Reset(); }
 
-Shader::Shader(Shader&& other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
+Shader::Shader(Shader &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
 
-auto Shader::operator=(Shader&& other) noexcept -> Shader& {
+auto Shader::operator=(Shader &&other) noexcept -> Shader & {
   if (this != &other) {
     Reset();
     handle_ = std::exchange(other.handle_, 0);
@@ -25,7 +25,7 @@ auto Shader::operator=(Shader&& other) noexcept -> Shader& {
   return *this;
 }
 
-auto Shader::Create(Type type, const char* source) -> std::expected<Shader, Error> {
+auto Shader::Create(Type type, const char *source) -> std::expected<Shader, Error> {
   if (source == nullptr) {
     spdlog::error("Shader source is null");
     return std::unexpected{Error::kSourceNull};
@@ -59,7 +59,7 @@ auto Shader::Create(Type type, const char* source) -> std::expected<Shader, Erro
   return Shader{handle};
 }
 
-auto Shader::CreateFromFile(Type type, const std::filesystem::path& path) -> std::expected<Shader, Error> {
+auto Shader::CreateFromFile(Type type, const std::filesystem::path &path) -> std::expected<Shader, Error> {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
     spdlog::error("Failed to open shader file: {}", path.string());

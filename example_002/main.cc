@@ -19,7 +19,7 @@ auto main() -> int {
   spdlog::info("SDL initialized successfully");
   auto sdl_cleanup{ScopeExit{[] -> void { ::SDL_Quit(); }}};
 
-  const char* glsl_version{"#version 460 core"};
+  const char *glsl_version{"#version 460 core"};
 
   ::SDL_GL_SetAttribute(::SDL_GL_CONTEXT_FLAGS, 0);
   ::SDL_GL_SetAttribute(::SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -36,11 +36,12 @@ auto main() -> int {
     main_scale = 1.0F;
   }
 
-  const char* title{"example_002"};
+  const char *title{"example_002"};
   const auto window_w{static_cast<std::int32_t>(1'280 * main_scale)};
   const auto window_h{static_cast<std::int32_t>(720 * main_scale)};
-  const ::SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
-  ::SDL_Window* const window{::SDL_CreateWindow(title, window_w, window_h, flags)};
+  const ::SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
+                                SDL_WINDOW_HIGH_PIXEL_DENSITY};
+  ::SDL_Window *const window{::SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
     spdlog::error("Failed to create SDL window: {}", ::SDL_GetError());
     return EXIT_FAILURE;
@@ -69,13 +70,13 @@ auto main() -> int {
   spdlog::info("GLAD initialized successfully");
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("OpenGL version: {}", reinterpret_cast<const char*>(::glGetString(GL_VERSION)));
+  spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(::glGetString(GL_VERSION)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("GLSL version: {}", reinterpret_cast<const char*>(::glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  spdlog::info("GLSL version: {}", reinterpret_cast<const char *>(::glGetString(GL_SHADING_LANGUAGE_VERSION)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("Vendor: {}", reinterpret_cast<const char*>(::glGetString(GL_VENDOR)));
+  spdlog::info("Vendor: {}", reinterpret_cast<const char *>(::glGetString(GL_VENDOR)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("Renderer: {}", reinterpret_cast<const char*>(::glGetString(GL_RENDERER)));
+  spdlog::info("Renderer: {}", reinterpret_cast<const char *>(::glGetString(GL_RENDERER)));
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -84,7 +85,7 @@ auto main() -> int {
     ::ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
   }}};
-  ::ImGuiIO& io{ImGui::GetIO()};
+  ::ImGuiIO &io{ImGui::GetIO()};
   io.ConfigFlags |= ::ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ::ImGuiConfigFlags_NavEnableGamepad;
   io.ConfigFlags |= ::ImGuiConfigFlags_DockingEnable;
@@ -92,7 +93,7 @@ auto main() -> int {
 
   ImGui::StyleColorsDark();
 
-  ::ImGuiStyle& style{ImGui::GetStyle()};
+  ::ImGuiStyle &style{ImGui::GetStyle()};
   style.ScaleAllSizes(main_scale);
   style.FontScaleDpi = main_scale;
   io.ConfigDpiScaleFonts = true;
@@ -113,16 +114,16 @@ auto main() -> int {
     while (::SDL_PollEvent(&event)) {
       ::ImGui_ImplSDL3_ProcessEvent(&event);
       switch (event.type) {
-        case ::SDL_EVENT_QUIT:
+      case ::SDL_EVENT_QUIT:
+        done = true;
+        break;
+      case ::SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        if (event.window.windowID == ::SDL_GetWindowID(window)) {
           done = true;
-          break;
-        case ::SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-          if (event.window.windowID == ::SDL_GetWindowID(window)) {
-            done = true;
-          }
-          break;
-        default:
-          break;
+        }
+        break;
+      default:
+        break;
       }
     }
 
@@ -145,7 +146,7 @@ auto main() -> int {
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if (static_cast<bool>(io.ConfigFlags & ::ImGuiConfigFlags_ViewportsEnable)) {
-      ::SDL_Window* const backup_current_window{::SDL_GL_GetCurrentWindow()};
+      ::SDL_Window *const backup_current_window{::SDL_GL_GetCurrentWindow()};
       const ::SDL_GLContext backup_current_context{::SDL_GL_GetCurrentContext()};
       ImGui::UpdatePlatformWindows();
       ImGui::RenderPlatformWindowsDefault();

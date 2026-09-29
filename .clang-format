@@ -1,8 +1,7 @@
 ---
-BasedOnStyle: Google
+BasedOnStyle: LLVM
 Language: Cpp
-QualifierAlignment: Left
-ColumnLimit: 200
+ColumnLimit: 120
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^"'

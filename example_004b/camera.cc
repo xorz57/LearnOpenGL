@@ -13,35 +13,39 @@ constexpr float kFov{45.0F};
 constexpr float kNearPlane{0.1F};
 constexpr float kFarPlane{100.0F};
 
-}  // namespace
+} // namespace
 
-Camera::Camera(const glm::vec3& position) : position_{position} { UpdateCameraVectors(); }
+Camera::Camera(const glm::vec3 &position) : position_{position} { UpdateCameraVectors(); }
 
-auto Camera::ComputeViewMatrix() const -> glm::mat4 { return glm::lookAt(position_, position_ + front_, glm::normalize(glm::cross(right_, front_))); }
+auto Camera::ComputeViewMatrix() const -> glm::mat4 {
+  return glm::lookAt(position_, position_ + front_, glm::normalize(glm::cross(right_, front_)));
+}
 
-auto Camera::ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4 { return glm::perspective(glm::radians(kFov), aspect_ratio, kNearPlane, kFarPlane); }
+auto Camera::ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4 {
+  return glm::perspective(glm::radians(kFov), aspect_ratio, kNearPlane, kFarPlane);
+}
 
 auto Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) -> void {
   const float velocity{kMovementSpeed * speed_multiplier * delta_time};
   switch (movement) {
-    case Movement::kForward:
-      position_ += front_ * velocity;
-      break;
-    case Movement::kBackward:
-      position_ -= front_ * velocity;
-      break;
-    case Movement::kLeft:
-      position_ -= right_ * velocity;
-      break;
-    case Movement::kRight:
-      position_ += right_ * velocity;
-      break;
-    case Movement::kUp:
-      position_ += kWorldUp * velocity;
-      break;
-    case Movement::kDown:
-      position_ -= kWorldUp * velocity;
-      break;
+  case Movement::kForward:
+    position_ += front_ * velocity;
+    break;
+  case Movement::kBackward:
+    position_ -= front_ * velocity;
+    break;
+  case Movement::kLeft:
+    position_ -= right_ * velocity;
+    break;
+  case Movement::kRight:
+    position_ += right_ * velocity;
+    break;
+  case Movement::kUp:
+    position_ += kWorldUp * velocity;
+    break;
+  case Movement::kDown:
+    position_ -= kWorldUp * velocity;
+    break;
   }
 }
 

@@ -5,7 +5,7 @@
 #include <filesystem>
 
 class Shader final {
- public:
+public:
   enum class Type : std::uint8_t {
     kVertex,
     kFragment,
@@ -21,20 +21,21 @@ class Shader final {
 
   ~Shader();
 
-  Shader(const Shader&) = delete;
-  auto operator=(const Shader&) -> Shader& = delete;
+  Shader(const Shader &) = delete;
+  auto operator=(const Shader &) -> Shader & = delete;
 
-  Shader(Shader&& other) noexcept;
-  auto operator=(Shader&& other) noexcept -> Shader&;
+  Shader(Shader &&other) noexcept;
+  auto operator=(Shader &&other) noexcept -> Shader &;
 
-  [[nodiscard]] static auto Create(Type type, const char* source) -> std::expected<Shader, Error>;
-  [[nodiscard]] static auto CreateFromFile(Type type, const std::filesystem::path& path) -> std::expected<Shader, Error>;
+  [[nodiscard]] static auto Create(Type type, const char *source) -> std::expected<Shader, Error>;
+  [[nodiscard]] static auto CreateFromFile(Type type, const std::filesystem::path &path)
+      -> std::expected<Shader, Error>;
 
   auto Reset() -> void;
 
   [[nodiscard]] auto GetHandle() const -> std::uint32_t { return handle_; }
 
- private:
+private:
   explicit Shader(std::uint32_t handle) : handle_{handle} {}
 
   std::uint32_t handle_{};

@@ -13,9 +13,11 @@
 
 Mesh::~Mesh() { Reset(); }
 
-Mesh::Mesh(Mesh&& other) noexcept : vbo_{std::exchange(other.vbo_, 0)}, ebo_{std::exchange(other.ebo_, 0)}, vao_{std::exchange(other.vao_, 0)}, indices_size_{std::exchange(other.indices_size_, 0)} {}
+Mesh::Mesh(Mesh &&other) noexcept
+    : vbo_{std::exchange(other.vbo_, 0)}, ebo_{std::exchange(other.ebo_, 0)}, vao_{std::exchange(other.vao_, 0)},
+      indices_size_{std::exchange(other.indices_size_, 0)} {}
 
-auto Mesh::operator=(Mesh&& other) noexcept -> Mesh& {
+auto Mesh::operator=(Mesh &&other) noexcept -> Mesh & {
   if (this != &other) {
     Reset();
     vbo_ = std::exchange(other.vbo_, 0);
@@ -26,7 +28,8 @@ auto Mesh::operator=(Mesh&& other) noexcept -> Mesh& {
   return *this;
 }
 
-auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices) -> std::expected<Mesh, Error> {
+auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices)
+    -> std::expected<Mesh, Error> {
   if (vertices.empty()) {
     spdlog::error("Mesh has no vertices");
     return std::unexpected{Error::kVerticesEmpty};
@@ -91,5 +94,6 @@ auto Mesh::Draw() const -> void {
   }
 
   ::glBindVertexArray(vao_);
-  ::glDrawElements(GL_TRIANGLES, static_cast<std::int32_t>(indices_size_), GL_UNSIGNED_INT, static_cast<void*>(nullptr));
+  ::glDrawElements(GL_TRIANGLES, static_cast<std::int32_t>(indices_size_), GL_UNSIGNED_INT,
+                   static_cast<void *>(nullptr));
 }

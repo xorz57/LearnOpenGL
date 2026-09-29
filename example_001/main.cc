@@ -30,11 +30,12 @@ auto main() -> int {
     main_scale = 1.0F;
   }
 
-  const char* title{"example_001"};
+  const char *title{"example_001"};
   const auto window_w{static_cast<std::int32_t>(1'280 * main_scale)};
   const auto window_h{static_cast<std::int32_t>(720 * main_scale)};
-  const ::SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY};
-  ::SDL_Window* const window{::SDL_CreateWindow(title, window_w, window_h, flags)};
+  const ::SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
+                                SDL_WINDOW_HIGH_PIXEL_DENSITY};
+  ::SDL_Window *const window{::SDL_CreateWindow(title, window_w, window_h, flags)};
   if (window == nullptr) {
     spdlog::error("Failed to create SDL window: {}", ::SDL_GetError());
     return EXIT_FAILURE;
@@ -63,13 +64,13 @@ auto main() -> int {
   spdlog::info("GLAD initialized successfully");
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("OpenGL version: {}", reinterpret_cast<const char*>(::glGetString(GL_VERSION)));
+  spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(::glGetString(GL_VERSION)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("GLSL version: {}", reinterpret_cast<const char*>(::glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  spdlog::info("GLSL version: {}", reinterpret_cast<const char *>(::glGetString(GL_SHADING_LANGUAGE_VERSION)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("Vendor: {}", reinterpret_cast<const char*>(::glGetString(GL_VENDOR)));
+  spdlog::info("Vendor: {}", reinterpret_cast<const char *>(::glGetString(GL_VENDOR)));
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("Renderer: {}", reinterpret_cast<const char*>(::glGetString(GL_RENDERER)));
+  spdlog::info("Renderer: {}", reinterpret_cast<const char *>(::glGetString(GL_RENDERER)));
 
   bool done{false};
 
@@ -77,16 +78,16 @@ auto main() -> int {
     ::SDL_Event event{};
     while (::SDL_PollEvent(&event)) {
       switch (event.type) {
-        case ::SDL_EVENT_QUIT:
+      case ::SDL_EVENT_QUIT:
+        done = true;
+        break;
+      case ::SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        if (event.window.windowID == ::SDL_GetWindowID(window)) {
           done = true;
-          break;
-        case ::SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-          if (event.window.windowID == ::SDL_GetWindowID(window)) {
-            done = true;
-          }
-          break;
-        default:
-          break;
+        }
+        break;
+      default:
+        break;
       }
     }
 

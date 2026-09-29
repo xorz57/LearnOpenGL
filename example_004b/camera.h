@@ -5,7 +5,7 @@
 #include <cstdint>
 
 class Camera final {
- public:
+public:
   enum class Movement : std::uint8_t {
     kForward,
     kBackward,
@@ -15,7 +15,7 @@ class Camera final {
     kDown,
   };
 
-  explicit Camera(const glm::vec3& position = {0.0F, 0.0F, 0.0F});
+  explicit Camera(const glm::vec3 &position = {0.0F, 0.0F, 0.0F});
 
   [[nodiscard]] auto ComputeViewMatrix() const -> glm::mat4;
   [[nodiscard]] static auto ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4;
@@ -25,7 +25,7 @@ class Camera final {
 
   [[nodiscard]] auto GetPosition() const -> glm::vec3 { return position_; }
 
- private:
+private:
   auto UpdateCameraVectors() -> void;
 
   glm::vec3 position_;
