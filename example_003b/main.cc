@@ -1,3 +1,4 @@
+#include "buffer.h"
 #include "camera.h"
 #include "instance.h"
 #include "program.h"
@@ -19,6 +20,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <span>
 #include <vector>
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -171,29 +173,28 @@ auto main() -> int {
       {.model = glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}), .color = {0.0F, 0.0F, 1.0F}},
   };
 
-  std::uint32_t vbo{};
-  std::uint32_t ebo{};
-  std::uint32_t ibo{};
+  auto vertex_buffer{Buffer::Create(std::as_bytes(std::span{vertices}))};
+  if (!vertex_buffer.has_value()) {
+    return EXIT_FAILURE;
+  }
+
+  auto index_buffer{Buffer::Create(std::as_bytes(std::span{indices}))};
+  if (!index_buffer.has_value()) {
+    return EXIT_FAILURE;
+  }
+
+  auto instance_buffer{Buffer::Create(std::as_bytes(std::span{instances}))};
+  if (!instance_buffer.has_value()) {
+    return EXIT_FAILURE;
+  }
 
   std::uint32_t vao{};
-
-  ::glCreateBuffers(1, &vbo);
-  ::glCreateBuffers(1, &ebo);
-  ::glCreateBuffers(1, &ibo);
-  auto vbo_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &vbo); }}};
-  auto ebo_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &ebo); }}};
-  auto ibo_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &ibo); }}};
-
   ::glCreateVertexArrays(1, &vao);
   auto vao_cleanup{ScopeExit{[&] -> void { ::glDeleteVertexArrays(1, &vao); }}};
 
-  ::glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
-  ::glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
-  ::glNamedBufferStorage(ibo, static_cast<std::ptrdiff_t>(instances.size() * sizeof(Instance)), instances.data(), 0);
-
-  ::glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
-  ::glVertexArrayVertexBuffer(vao, 1, ibo, 0, static_cast<std::int32_t>(sizeof(Instance)));
-  ::glVertexArrayElementBuffer(vao, ebo);
+  ::glVertexArrayVertexBuffer(vao, 0, vertex_buffer->GetHandle(), 0, static_cast<std::int32_t>(sizeof(Vertex)));
+  ::glVertexArrayVertexBuffer(vao, 1, instance_buffer->GetHandle(), 0, static_cast<std::int32_t>(sizeof(Instance)));
+  ::glVertexArrayElementBuffer(vao, index_buffer->GetHandle());
 
   ::glEnableVertexArrayAttrib(vao, 0);
   ::glEnableVertexArrayAttrib(vao, 1);
