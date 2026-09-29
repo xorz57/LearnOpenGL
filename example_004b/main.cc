@@ -72,7 +72,6 @@ auto main() -> int {
   ::SDL_GL_SetSwapInterval(1);
   ::SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
   ::SDL_ShowWindow(window);
-  ::SDL_SetWindowRelativeMouseMode(window, true);
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (::gladLoadGL(reinterpret_cast<::GLADloadfunc>(::SDL_GL_GetProcAddress)) == 0) {
@@ -225,8 +224,21 @@ auto main() -> int {
           done = true;
         }
         break;
+      case ::SDL_EVENT_WINDOW_FOCUS_LOST:
+        ::SDL_SetWindowRelativeMouseMode(window, false);
+        break;
+      case ::SDL_EVENT_MOUSE_BUTTON_DOWN:
+        if (!io.WantCaptureMouse && event.button.button == SDL_BUTTON_RIGHT) {
+          ::SDL_SetWindowRelativeMouseMode(window, true);
+        }
+        break;
+      case ::SDL_EVENT_MOUSE_BUTTON_UP:
+        if (event.button.button == SDL_BUTTON_RIGHT) {
+          ::SDL_SetWindowRelativeMouseMode(window, false);
+        }
+        break;
       case ::SDL_EVENT_MOUSE_MOTION:
-        if (!io.WantCaptureMouse) {
+        if (!io.WantCaptureMouse && ::SDL_GetWindowRelativeMouseMode(window)) {
           camera.ProcessMouseMovement(event.motion.xrel, -event.motion.yrel);
         }
         break;
@@ -246,7 +258,7 @@ auto main() -> int {
       continue;
     }
 
-    if (!io.WantCaptureKeyboard) {
+    if (!io.WantCaptureKeyboard && ::SDL_GetWindowRelativeMouseMode(window)) {
       const bool *keyboard_state{::SDL_GetKeyboardState(nullptr)};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       const float speed_multiplier{keyboard_state[::SDL_SCANCODE_LSHIFT] ? 2.5F : 1.0F};
