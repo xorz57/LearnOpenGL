@@ -43,6 +43,15 @@ auto Program::operator=(Program&& other) noexcept -> Program& {
 }
 
 auto Program::Create(const Shader& vertex_shader, const Shader& fragment_shader) -> std::expected<Program, Error> {
+  if (vertex_shader.GetHandle() == 0) {
+    spdlog::error("Vertex shader not initialized");
+    return std::unexpected{Error::kVertexShaderInvalid};
+  }
+  if (fragment_shader.GetHandle() == 0) {
+    spdlog::error("Fragment shader not initialized");
+    return std::unexpected{Error::kFragmentShaderInvalid};
+  }
+
   const std::uint32_t handle{::glCreateProgram()};
   if (handle == 0) {
     spdlog::error("Failed to create program");
