@@ -122,6 +122,12 @@ auto main() -> int {
           done = true;
         }
         break;
+      case ::SDL_EVENT_KEY_DOWN:
+        if (!event.key.repeat && event.key.key == SDLK_RETURN && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
+          const bool is_fullscreen{static_cast<bool>(::SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)};
+          ::SDL_SetWindowFullscreen(window, !is_fullscreen);
+        }
+        break;
       default:
         break;
       }
