@@ -1,4 +1,3 @@
-#include "buffer.h"
 #include "camera.h"
 #include "program.h"
 #include "scope_exit.h"
@@ -19,7 +18,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
-#include <span>
 #include <vector>
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -166,22 +164,24 @@ auto main() -> int {
   };
   // clang-format on
 
-  auto vertex_buffer{Buffer::Create(std::as_bytes(std::span{vertices}))};
-  if (!vertex_buffer.has_value()) {
-    return EXIT_FAILURE;
-  }
-
-  auto index_buffer{Buffer::Create(std::as_bytes(std::span{indices}))};
-  if (!index_buffer.has_value()) {
-    return EXIT_FAILURE;
-  }
+  std::uint32_t vbo{};
+  std::uint32_t ebo{};
 
   std::uint32_t vao{};
+
+  ::glCreateBuffers(1, &vbo);
+  ::glCreateBuffers(1, &ebo);
+  auto vbo_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &vbo); }}};
+  auto ebo_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &ebo); }}};
+
   ::glCreateVertexArrays(1, &vao);
   auto vao_cleanup{ScopeExit{[&] -> void { ::glDeleteVertexArrays(1, &vao); }}};
 
-  ::glVertexArrayVertexBuffer(vao, 0, vertex_buffer->GetHandle(), 0, static_cast<std::int32_t>(sizeof(Vertex)));
-  ::glVertexArrayElementBuffer(vao, index_buffer->GetHandle());
+  ::glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
+  ::glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
+
+  ::glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
+  ::glVertexArrayElementBuffer(vao, ebo);
 
   ::glEnableVertexArrayAttrib(vao, 0);
   ::glEnableVertexArrayAttrib(vao, 1);
