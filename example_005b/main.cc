@@ -1,4 +1,3 @@
-#include "buffer.h"
 #include "camera.h"
 #include "instance.h"
 #include "light.h"
@@ -20,10 +19,10 @@
 #include <spdlog/spdlog.h>
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
-#include <span>
 #include <vector>
 
 namespace {
@@ -205,10 +204,11 @@ auto main() -> int {
       {.diffuse = light.color},
   };
 
-  auto material_buffer{Buffer::Create(std::as_bytes(std::span{materials}))};
-  if (!material_buffer.has_value()) {
-    return EXIT_FAILURE;
-  }
+  std::uint32_t material_buffer{};
+  ::glCreateBuffers(1, &material_buffer);
+  auto material_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &material_buffer); }}};
+  ::glNamedBufferStorage(material_buffer, static_cast<std::ptrdiff_t>(materials.size() * sizeof(Material)),
+                         materials.data(), 0);
 
   const std::vector<Instance> instances{
       MakeInstance(glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}), kRedPlasticMaterial),
@@ -376,7 +376,7 @@ auto main() -> int {
     const glm::mat4 projection{Camera::ComputeProjectionMatrix(aspect_ratio)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
-    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kMaterialsBinding, material_buffer->GetHandle());
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kMaterialsBinding, material_buffer);
 
     lit_program->Use();
     lit_program->SetUniform("u_projection", projection);

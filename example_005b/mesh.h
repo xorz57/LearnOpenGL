@@ -1,6 +1,5 @@
 #pragma once
 
-#include "buffer.h"
 #include "instance.h"
 #include "vertex.h"
 
@@ -8,7 +7,6 @@
 #include <cstdint>
 #include <expected>
 #include <span>
-#include <utility>
 
 class Mesh final {
 public:
@@ -16,7 +14,6 @@ public:
     kVerticesEmpty,
     kIndicesEmpty,
     kInstancesEmpty,
-    kBufferCreateFailed,
   };
 
   ~Mesh();
@@ -36,15 +33,13 @@ public:
 
 private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  explicit Mesh(Buffer vertex_buffer, Buffer index_buffer, Buffer instance_buffer, std::uint32_t vao,
-                std::size_t indices_size, std::size_t instances_size)
-      : vertex_buffer_{std::move(vertex_buffer)}, index_buffer_{std::move(index_buffer)},
-        instance_buffer_{std::move(instance_buffer)}, vao_{vao}, indices_size_{indices_size},
-        instances_size_{instances_size} {}
+  explicit Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t ibo, std::uint32_t vao, std::size_t indices_size,
+                std::size_t instances_size)
+      : vbo_{vbo}, ebo_{ebo}, ibo_{ibo}, vao_{vao}, indices_size_{indices_size}, instances_size_{instances_size} {}
 
-  Buffer vertex_buffer_;
-  Buffer index_buffer_;
-  Buffer instance_buffer_;
+  std::uint32_t vbo_{};
+  std::uint32_t ebo_{};
+  std::uint32_t ibo_{};
   std::uint32_t vao_{};
 
   std::size_t indices_size_{};

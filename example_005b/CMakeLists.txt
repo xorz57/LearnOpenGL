@@ -2,7 +2,6 @@ add_executable(example_005b)
 target_sources(
   example_005b
   PRIVATE main.cc
-          buffer.cc
           mesh.cc
           shader.cc
           program.cc
