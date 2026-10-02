@@ -361,13 +361,14 @@ auto main() -> int {
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kTransformsBinding, transform_buffer);
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kColorsBinding, color_buffer);
     ::glBindVertexArray(mesh->GetVertexArray());
+    const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
 
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
 
-    ::glDrawElementsInstanced(GL_TRIANGLES, static_cast<std::int32_t>(mesh->GetIndicesSize()), GL_UNSIGNED_INT,
-                              static_cast<void *>(nullptr), static_cast<std::int32_t>(instances.size()));
+    ::glDrawElementsInstanced(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr),
+                              static_cast<std::int32_t>(instances.size()));
 
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
