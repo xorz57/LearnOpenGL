@@ -11,8 +11,8 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
 #include <glad/gl.h>
-#include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
@@ -350,19 +350,19 @@ auto main() -> int {
 
     const glm::mat4 model1{glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F})};
     lit_program->SetUniform("u_model", model1);
-    lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::transpose(glm::inverse(model1))});
+    lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::inverseTranspose(model1)});
     SetMaterialUniforms(*lit_program, material1);
     mesh->Draw();
 
     const glm::mat4 model2{glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F})};
     lit_program->SetUniform("u_model", model2);
-    lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::transpose(glm::inverse(model2))});
+    lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::inverseTranspose(model2)});
     SetMaterialUniforms(*lit_program, material2);
     mesh->Draw();
 
     const glm::mat4 model3{glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F})};
     lit_program->SetUniform("u_model", model3);
-    lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::transpose(glm::inverse(model3))});
+    lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::inverseTranspose(model3)});
     SetMaterialUniforms(*lit_program, material3);
     mesh->Draw();
 
