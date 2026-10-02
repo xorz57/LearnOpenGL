@@ -1,12 +1,6 @@
 add_executable(example_005a)
-target_sources(
-  example_005a
-  PRIVATE main.cc
-          mesh.cc
-          shader.cc
-          program.cc
-          camera.cc
-          stb_image_impl.cc)
+target_sources(example_005a PRIVATE main.cc mesh.cc shader.cc program.cc
+                                    camera.cc stb_image_impl.cc)
 
 target_link_libraries(example_005a PRIVATE glad::glad)
 target_link_libraries(example_005a PRIVATE glm::glm)
