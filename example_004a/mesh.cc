@@ -1,6 +1,5 @@
 #include "mesh.h"
 
-#include "buffer.h"
 #include "vertex.h"
 
 #include <glad/gl.h>
@@ -15,14 +14,14 @@
 Mesh::~Mesh() { Reset(); }
 
 Mesh::Mesh(Mesh &&other) noexcept
-    : vertex_buffer_{std::move(other.vertex_buffer_)}, index_buffer_{std::move(other.index_buffer_)},
-      vao_{std::exchange(other.vao_, 0)}, indices_size_{std::exchange(other.indices_size_, 0)} {}
+    : vbo_{std::exchange(other.vbo_, 0)}, ebo_{std::exchange(other.ebo_, 0)}, vao_{std::exchange(other.vao_, 0)},
+      indices_size_{std::exchange(other.indices_size_, 0)} {}
 
 auto Mesh::operator=(Mesh &&other) noexcept -> Mesh & {
   if (this != &other) {
     Reset();
-    vertex_buffer_ = std::move(other.vertex_buffer_);
-    index_buffer_ = std::move(other.index_buffer_);
+    vbo_ = std::exchange(other.vbo_, 0);
+    ebo_ = std::exchange(other.ebo_, 0);
     vao_ = std::exchange(other.vao_, 0);
     indices_size_ = std::exchange(other.indices_size_, 0);
   }
@@ -40,20 +39,20 @@ auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_
     return std::unexpected{Error::kIndicesEmpty};
   }
 
-  auto vertex_buffer{Buffer::Create(std::as_bytes(vertices))};
-  if (!vertex_buffer.has_value()) {
-    return std::unexpected{Error::kBufferCreateFailed};
-  }
-  auto index_buffer{Buffer::Create(std::as_bytes(indices))};
-  if (!index_buffer.has_value()) {
-    return std::unexpected{Error::kBufferCreateFailed};
-  }
-
+  std::uint32_t vbo{};
+  std::uint32_t ebo{};
   std::uint32_t vao{};
+
+  ::glCreateBuffers(1, &vbo);
+  ::glCreateBuffers(1, &ebo);
+
   ::glCreateVertexArrays(1, &vao);
 
-  ::glVertexArrayVertexBuffer(vao, 0, vertex_buffer->GetHandle(), 0, static_cast<std::int32_t>(sizeof(Vertex)));
-  ::glVertexArrayElementBuffer(vao, index_buffer->GetHandle());
+  ::glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
+  ::glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
+
+  ::glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
+  ::glVertexArrayElementBuffer(vao, ebo);
 
   ::glEnableVertexArrayAttrib(vao, 0);
   ::glEnableVertexArrayAttrib(vao, 1);
@@ -69,7 +68,7 @@ auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_
   ::glVertexArrayAttribBinding(vao, 1, 0);
   ::glVertexArrayAttribBinding(vao, 2, 0);
 
-  return Mesh{std::move(*vertex_buffer), std::move(*index_buffer), vao, indices.size()};
+  return Mesh{vbo, ebo, vao, indices.size()};
 }
 
 auto Mesh::Reset() -> void {
@@ -77,8 +76,14 @@ auto Mesh::Reset() -> void {
     ::glDeleteVertexArrays(1, &vao_);
     vao_ = 0;
   }
-  index_buffer_.Reset();
-  vertex_buffer_.Reset();
+  if (ebo_ != 0) {
+    ::glDeleteBuffers(1, &ebo_);
+    ebo_ = 0;
+  }
+  if (vbo_ != 0) {
+    ::glDeleteBuffers(1, &vbo_);
+    vbo_ = 0;
+  }
   indices_size_ = 0;
 }
 
