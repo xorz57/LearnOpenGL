@@ -16,7 +16,6 @@ uniform vec3 u_ambient_light;
 uniform Light u_light;
 uniform Material u_material;
 uniform vec3 u_view_position;
-uniform mat4 u_model;
 
 in vec3 v_position;
 in vec3 v_normal;
