@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <cstdint>
 
 struct Instance final {
-  glm::mat4 model{};
-  glm::vec3 color{};
+  std::uint32_t transform_index{};
+  std::uint32_t color_index{};
 };

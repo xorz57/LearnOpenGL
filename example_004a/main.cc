@@ -297,6 +297,9 @@ auto main() -> int {
     const glm::mat4 projection{Camera::ComputeProjectionMatrix(aspect_ratio)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
+    ::glBindVertexArray(mesh->GetVertexArray());
+    const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
+
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
@@ -305,19 +308,19 @@ auto main() -> int {
     const glm::vec3 color1{1.0F, 0.0F, 0.0F};
     unlit_program->SetUniform("u_model", model1);
     unlit_program->SetUniform("u_color", color1);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     const glm::mat4 model2{glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F})};
     const glm::vec3 color2{0.0F, 1.0F, 0.0F};
     unlit_program->SetUniform("u_model", model2);
     unlit_program->SetUniform("u_color", color2);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     const glm::mat4 model3{glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F})};
     const glm::vec3 color3{0.0F, 0.0F, 1.0F};
     unlit_program->SetUniform("u_model", model3);
     unlit_program->SetUniform("u_color", color3);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

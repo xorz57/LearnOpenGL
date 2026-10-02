@@ -341,6 +341,9 @@ auto main() -> int {
     const glm::mat4 projection{Camera::ComputeProjectionMatrix(aspect_ratio)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
+    ::glBindVertexArray(mesh->GetVertexArray());
+    const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
+
     lit_program->Use();
     lit_program->SetUniform("u_projection", projection);
     lit_program->SetUniform("u_view", view);
@@ -352,19 +355,19 @@ auto main() -> int {
     lit_program->SetUniform("u_model", model1);
     lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::inverseTranspose(model1)});
     SetMaterialUniforms(*lit_program, material1);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     const glm::mat4 model2{glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F})};
     lit_program->SetUniform("u_model", model2);
     lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::inverseTranspose(model2)});
     SetMaterialUniforms(*lit_program, material2);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     const glm::mat4 model3{glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F})};
     lit_program->SetUniform("u_model", model3);
     lit_program->SetUniform("u_normal_matrix", glm::mat3{glm::inverseTranspose(model3)});
     SetMaterialUniforms(*lit_program, material3);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);
@@ -373,7 +376,7 @@ auto main() -> int {
     const glm::mat4 light_model{glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F})};
     unlit_program->SetUniform("u_model", light_model);
     unlit_program->SetUniform("u_color", light.color);
-    mesh->Draw();
+    ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

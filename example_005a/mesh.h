@@ -27,7 +27,8 @@ public:
 
   auto Reset() -> void;
 
-  auto Draw() const -> void;
+  [[nodiscard]] auto GetVertexArray() const -> std::uint32_t { return vao_; }
+  [[nodiscard]] auto GetIndicesSize() const -> std::size_t { return indices_size_; }
 
 private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)

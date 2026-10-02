@@ -86,14 +86,3 @@ auto Mesh::Reset() -> void {
   }
   indices_size_ = 0;
 }
-
-auto Mesh::Draw() const -> void {
-  if (vao_ == 0) {
-    spdlog::error("Mesh not initialized");
-    return;
-  }
-
-  ::glBindVertexArray(vao_);
-  ::glDrawElements(GL_TRIANGLES, static_cast<std::int32_t>(indices_size_), GL_UNSIGNED_INT,
-                   static_cast<void *>(nullptr));
-}

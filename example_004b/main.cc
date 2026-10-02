@@ -16,10 +16,27 @@
 #include <spdlog/spdlog.h>
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <vector>
+
+namespace {
+
+constexpr std::uint32_t kRedColor{0};
+constexpr std::uint32_t kGreenColor{1};
+constexpr std::uint32_t kBlueColor{2};
+
+constexpr std::uint32_t kRedCubeTransform{0};
+constexpr std::uint32_t kGreenCubeTransform{1};
+constexpr std::uint32_t kFloorTransform{2};
+
+constexpr std::uint32_t kInstancesBinding{0};
+constexpr std::uint32_t kTransformsBinding{1};
+constexpr std::uint32_t kColorsBinding{2};
+
+} // namespace
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 auto main() -> int {
@@ -165,13 +182,49 @@ auto main() -> int {
   };
   // clang-format on
 
-  const std::vector<Instance> instances{
-      {.model = glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}), .color = {1.0F, 0.0F, 0.0F}},
-      {.model = glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F}), .color = {0.0F, 1.0F, 0.0F}},
-      {.model = glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}), .color = {0.0F, 0.0F, 1.0F}},
+  const std::vector<glm::vec4> colors{
+      // kRedColor
+      {1.0F, 0.0F, 0.0F, 1.0F},
+      // kGreenColor
+      {0.0F, 1.0F, 0.0F, 1.0F},
+      // kBlueColor
+      {0.0F, 0.0F, 1.0F, 1.0F},
   };
 
-  auto mesh{Mesh::Create(vertices, indices, instances)};
+  std::uint32_t color_buffer{};
+  ::glCreateBuffers(1, &color_buffer);
+  auto color_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &color_buffer); }}};
+  ::glNamedBufferStorage(color_buffer, static_cast<std::ptrdiff_t>(colors.size() * sizeof(glm::vec4)), colors.data(),
+                         0);
+
+  const std::vector<glm::mat4> transforms{
+      // kRedCubeTransform
+      glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}),
+      // kGreenCubeTransform
+      glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F}),
+      // kFloorTransform
+      glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}),
+  };
+
+  std::uint32_t transform_buffer{};
+  ::glCreateBuffers(1, &transform_buffer);
+  auto transform_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &transform_buffer); }}};
+  ::glNamedBufferStorage(transform_buffer, static_cast<std::ptrdiff_t>(transforms.size() * sizeof(glm::mat4)),
+                         transforms.data(), 0);
+
+  const std::vector<Instance> instances{
+      {.transform_index = kRedCubeTransform, .color_index = kRedColor},
+      {.transform_index = kGreenCubeTransform, .color_index = kGreenColor},
+      {.transform_index = kFloorTransform, .color_index = kBlueColor},
+  };
+
+  std::uint32_t instance_buffer{};
+  ::glCreateBuffers(1, &instance_buffer);
+  auto instance_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &instance_buffer); }}};
+  ::glNamedBufferStorage(instance_buffer, static_cast<std::ptrdiff_t>(instances.size() * sizeof(Instance)),
+                         instances.data(), 0);
+
+  auto mesh{Mesh::Create(vertices, indices)};
   if (!mesh.has_value()) {
     return EXIT_FAILURE;
   }
@@ -304,11 +357,17 @@ auto main() -> int {
     const glm::mat4 projection{Camera::ComputeProjectionMatrix(aspect_ratio)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kInstancesBinding, instance_buffer);
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kTransformsBinding, transform_buffer);
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kColorsBinding, color_buffer);
+    ::glBindVertexArray(mesh->GetVertexArray());
+
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
 
-    mesh->Draw();
+    ::glDrawElementsInstanced(GL_TRIANGLES, static_cast<std::int32_t>(mesh->GetIndicesSize()), GL_UNSIGNED_INT,
+                              static_cast<void *>(nullptr), static_cast<std::int32_t>(instances.size()));
 
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

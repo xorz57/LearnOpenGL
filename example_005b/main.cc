@@ -13,7 +13,6 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
@@ -32,16 +31,24 @@ constexpr std::uint32_t kGreenGlossyMaterial{1};
 constexpr std::uint32_t kBlueMatteMaterial{2};
 constexpr std::uint32_t kLightMaterial{3};
 
-constexpr std::uint32_t kMaterialsBinding{0};
+constexpr std::uint32_t kRedCubeTransform{0};
+constexpr std::uint32_t kGreenCubeTransform{1};
+constexpr std::uint32_t kFloorTransform{2};
+constexpr std::uint32_t kLightTransform{3};
+
+constexpr std::int32_t kLitInstancesCount{3};
+constexpr std::uint32_t kLitInstancesFirst{0};
+constexpr std::int32_t kUnlitInstancesCount{1};
+constexpr std::uint32_t kUnlitInstancesFirst{kLitInstancesFirst + kLitInstancesCount};
+
+constexpr std::uint32_t kInstancesBinding{0};
+constexpr std::uint32_t kTransformsBinding{1};
+constexpr std::uint32_t kMaterialsBinding{2};
 
 auto SetLightUniforms(const Program &program, const Light &light) -> void {
   program.SetUniform("u_light.position", light.position);
   program.SetUniform("u_light.color", light.color);
   program.SetUniform("u_light.intensity", light.intensity);
-}
-
-[[nodiscard]] auto MakeInstance(const glm::mat4 &model, std::uint32_t material_index) -> Instance {
-  return {.model = model, .normal_matrix = glm::mat3{glm::inverseTranspose(model)}, .material_index = material_index};
 }
 
 } // namespace
@@ -210,23 +217,40 @@ auto main() -> int {
   ::glNamedBufferStorage(material_buffer, static_cast<std::ptrdiff_t>(materials.size() * sizeof(Material)),
                          materials.data(), 0);
 
+  const std::vector<glm::mat4> transforms{
+      // kRedCubeTransform
+      glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}),
+      // kGreenCubeTransform
+      glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F}),
+      // kFloorTransform
+      glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}),
+      // kLightTransform
+      glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F}),
+  };
+
+  std::uint32_t transform_buffer{};
+  ::glCreateBuffers(1, &transform_buffer);
+  auto transform_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &transform_buffer); }}};
+  ::glNamedBufferStorage(transform_buffer, static_cast<std::ptrdiff_t>(transforms.size() * sizeof(glm::mat4)),
+                         transforms.data(), 0);
+
   const std::vector<Instance> instances{
-      MakeInstance(glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}), kRedPlasticMaterial),
-      MakeInstance(glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F}), kGreenGlossyMaterial),
-      MakeInstance(glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}), kBlueMatteMaterial),
+      // kLitInstancesFirst
+      {.transform_index = kRedCubeTransform, .material_index = kRedPlasticMaterial},
+      {.transform_index = kGreenCubeTransform, .material_index = kGreenGlossyMaterial},
+      {.transform_index = kFloorTransform, .material_index = kBlueMatteMaterial},
+      // kUnlitInstancesFirst
+      {.transform_index = kLightTransform, .material_index = kLightMaterial},
   };
 
-  auto mesh{Mesh::Create(vertices, indices, instances)};
+  std::uint32_t instance_buffer{};
+  ::glCreateBuffers(1, &instance_buffer);
+  auto instance_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &instance_buffer); }}};
+  ::glNamedBufferStorage(instance_buffer, static_cast<std::ptrdiff_t>(instances.size() * sizeof(Instance)),
+                         instances.data(), 0);
+
+  auto mesh{Mesh::Create(vertices, indices)};
   if (!mesh.has_value()) {
-    return EXIT_FAILURE;
-  }
-
-  const std::vector<Instance> light_instances{
-      MakeInstance(glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F}), kLightMaterial),
-  };
-
-  auto light_mesh{Mesh::Create(vertices, indices, light_instances)};
-  if (!light_mesh.has_value()) {
     return EXIT_FAILURE;
   }
 
@@ -376,7 +400,11 @@ auto main() -> int {
     const glm::mat4 projection{Camera::ComputeProjectionMatrix(aspect_ratio)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kInstancesBinding, instance_buffer);
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kTransformsBinding, transform_buffer);
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kMaterialsBinding, material_buffer);
+    ::glBindVertexArray(mesh->GetVertexArray());
+    const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
 
     lit_program->Use();
     lit_program->SetUniform("u_projection", projection);
@@ -385,13 +413,15 @@ auto main() -> int {
     SetLightUniforms(*lit_program, light);
     lit_program->SetUniform("u_view_position", camera.GetPosition());
 
-    mesh->Draw();
+    ::glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr),
+                                          kLitInstancesCount, kLitInstancesFirst);
 
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
 
-    light_mesh->Draw();
+    ::glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr),
+                                          kUnlitInstancesCount, kUnlitInstancesFirst);
 
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
