@@ -28,12 +28,12 @@ constexpr std::uint32_t kRedColor{0};
 constexpr std::uint32_t kGreenColor{1};
 constexpr std::uint32_t kBlueColor{2};
 
-constexpr std::uint32_t kRedCubeTransform{0};
-constexpr std::uint32_t kGreenCubeTransform{1};
-constexpr std::uint32_t kFloorTransform{2};
+constexpr std::uint32_t kRedCubeModel{0};
+constexpr std::uint32_t kGreenCubeModel{1};
+constexpr std::uint32_t kFloorModel{2};
 
 constexpr std::uint32_t kInstancesBinding{0};
-constexpr std::uint32_t kTransformsBinding{1};
+constexpr std::uint32_t kModelsBinding{1};
 constexpr std::uint32_t kColorsBinding{2};
 
 } // namespace
@@ -197,25 +197,25 @@ auto main() -> int {
   ::glNamedBufferStorage(color_buffer, static_cast<std::ptrdiff_t>(colors.size() * sizeof(glm::vec4)), colors.data(),
                          0);
 
-  const std::vector<glm::mat4> transforms{
-      // kRedCubeTransform
+  const std::vector<glm::mat4> models{
+      // kRedCubeModel
       glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}),
-      // kGreenCubeTransform
+      // kGreenCubeModel
       glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F}),
-      // kFloorTransform
+      // kFloorModel
       glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}),
   };
 
-  std::uint32_t transform_buffer{};
-  ::glCreateBuffers(1, &transform_buffer);
-  auto transform_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &transform_buffer); }}};
-  ::glNamedBufferStorage(transform_buffer, static_cast<std::ptrdiff_t>(transforms.size() * sizeof(glm::mat4)),
-                         transforms.data(), 0);
+  std::uint32_t model_buffer{};
+  ::glCreateBuffers(1, &model_buffer);
+  auto model_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &model_buffer); }}};
+  ::glNamedBufferStorage(model_buffer, static_cast<std::ptrdiff_t>(models.size() * sizeof(glm::mat4)), models.data(),
+                         0);
 
   const std::vector<Instance> instances{
-      {.transform_index = kRedCubeTransform, .color_index = kRedColor},
-      {.transform_index = kGreenCubeTransform, .color_index = kGreenColor},
-      {.transform_index = kFloorTransform, .color_index = kBlueColor},
+      {.model_index = kRedCubeModel, .color_index = kRedColor},
+      {.model_index = kGreenCubeModel, .color_index = kGreenColor},
+      {.model_index = kFloorModel, .color_index = kBlueColor},
   };
 
   std::uint32_t instance_buffer{};
@@ -358,7 +358,7 @@ auto main() -> int {
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kInstancesBinding, instance_buffer);
-    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kTransformsBinding, transform_buffer);
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kModelsBinding, model_buffer);
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kColorsBinding, color_buffer);
     ::glBindVertexArray(mesh->GetVertexArray());
     const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};

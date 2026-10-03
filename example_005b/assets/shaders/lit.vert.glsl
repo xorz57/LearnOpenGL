@@ -1,7 +1,7 @@
 #version 460 core
 
 struct Instance {
-  uint transform_index;
+  uint model_index;
   uint material_index;
 };
 
@@ -9,8 +9,8 @@ layout (std430, binding = 0) readonly buffer Instances {
   Instance u_instances[];
 };
 
-layout (std430, binding = 1) readonly buffer Transforms {
-  mat4 u_transforms[];
+layout (std430, binding = 1) readonly buffer Models {
+  mat4 u_models[];
 };
 
 layout (location = 0) in vec3 a_position;
@@ -27,12 +27,10 @@ flat out uint v_material_index;
 
 void main() {
   const Instance instance = u_instances[gl_BaseInstance + gl_InstanceID];
-  const mat4 transform = u_transforms[instance.transform_index];
-  const vec4 world_position = transform * vec4(a_position, 1.0F);
+  const mat4 model = u_models[instance.model_index];
+  const vec4 world_position = model * vec4(a_position, 1.0F);
   v_position = world_position.xyz;
-  const mat3 model = mat3(transform);
-  const mat3 normal_matrix = mat3(cross(model[1], model[2]), cross(model[2], model[0]), cross(model[0], model[1]));
-  v_normal = normal_matrix * a_normal;
+  v_normal = transpose(inverse(mat3(model))) * a_normal;
   v_material_index = instance.material_index;
   gl_Position = u_projection * u_view * world_position;
 }

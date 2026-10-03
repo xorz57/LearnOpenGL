@@ -31,10 +31,10 @@ constexpr std::uint32_t kGreenGlossyMaterial{1};
 constexpr std::uint32_t kBlueMatteMaterial{2};
 constexpr std::uint32_t kLightMaterial{3};
 
-constexpr std::uint32_t kRedCubeTransform{0};
-constexpr std::uint32_t kGreenCubeTransform{1};
-constexpr std::uint32_t kFloorTransform{2};
-constexpr std::uint32_t kLightTransform{3};
+constexpr std::uint32_t kRedCubeModel{0};
+constexpr std::uint32_t kGreenCubeModel{1};
+constexpr std::uint32_t kFloorModel{2};
+constexpr std::uint32_t kLightModel{3};
 
 constexpr std::int32_t kLitInstancesCount{3};
 constexpr std::uint32_t kLitInstancesFirst{0};
@@ -42,7 +42,7 @@ constexpr std::int32_t kUnlitInstancesCount{1};
 constexpr std::uint32_t kUnlitInstancesFirst{kLitInstancesFirst + kLitInstancesCount};
 
 constexpr std::uint32_t kInstancesBinding{0};
-constexpr std::uint32_t kTransformsBinding{1};
+constexpr std::uint32_t kModelsBinding{1};
 constexpr std::uint32_t kMaterialsBinding{2};
 
 auto SetLightUniforms(const Program &program, const Light &light) -> void {
@@ -217,30 +217,30 @@ auto main() -> int {
   ::glNamedBufferStorage(material_buffer, static_cast<std::ptrdiff_t>(materials.size() * sizeof(Material)),
                          materials.data(), 0);
 
-  const std::vector<glm::mat4> transforms{
-      // kRedCubeTransform
+  const std::vector<glm::mat4> models{
+      // kRedCubeModel
       glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F}),
-      // kGreenCubeTransform
+      // kGreenCubeModel
       glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F}),
-      // kFloorTransform
+      // kFloorModel
       glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F}),
-      // kLightTransform
+      // kLightModel
       glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F}),
   };
 
-  std::uint32_t transform_buffer{};
-  ::glCreateBuffers(1, &transform_buffer);
-  auto transform_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &transform_buffer); }}};
-  ::glNamedBufferStorage(transform_buffer, static_cast<std::ptrdiff_t>(transforms.size() * sizeof(glm::mat4)),
-                         transforms.data(), 0);
+  std::uint32_t model_buffer{};
+  ::glCreateBuffers(1, &model_buffer);
+  auto model_buffer_cleanup{ScopeExit{[&] -> void { ::glDeleteBuffers(1, &model_buffer); }}};
+  ::glNamedBufferStorage(model_buffer, static_cast<std::ptrdiff_t>(models.size() * sizeof(glm::mat4)), models.data(),
+                         0);
 
   const std::vector<Instance> instances{
       // kLitInstancesFirst
-      {.transform_index = kRedCubeTransform, .material_index = kRedPlasticMaterial},
-      {.transform_index = kGreenCubeTransform, .material_index = kGreenGlossyMaterial},
-      {.transform_index = kFloorTransform, .material_index = kBlueMatteMaterial},
+      {.model_index = kRedCubeModel, .material_index = kRedPlasticMaterial},
+      {.model_index = kGreenCubeModel, .material_index = kGreenGlossyMaterial},
+      {.model_index = kFloorModel, .material_index = kBlueMatteMaterial},
       // kUnlitInstancesFirst
-      {.transform_index = kLightTransform, .material_index = kLightMaterial},
+      {.model_index = kLightModel, .material_index = kLightMaterial},
   };
 
   std::uint32_t instance_buffer{};
@@ -401,7 +401,7 @@ auto main() -> int {
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kInstancesBinding, instance_buffer);
-    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kTransformsBinding, transform_buffer);
+    ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kModelsBinding, model_buffer);
     ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kMaterialsBinding, material_buffer);
     ::glBindVertexArray(mesh->GetVertexArray());
     const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
